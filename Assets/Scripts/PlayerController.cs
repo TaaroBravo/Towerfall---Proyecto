@@ -6,10 +6,9 @@ public class PlayerController : MonoBehaviour
 {
 
     public float moveSpeed;
-    public float jumpForce;
+    public float jumpForce = 20;
     public CharacterController controller;
-
-    private Vector3 moveVector;
+    public Vector3 moveVector;
     public float gravity;
     public float verticalVelocity;
 
@@ -19,6 +18,10 @@ public class PlayerController : MonoBehaviour
     public float dashingTime;
     public bool isDashing;
 
+    private IMove _iMove;
+    private IAttack _iAttack;
+
+    public Collider[] attackColliders;
 
     void Start()
     {
@@ -29,58 +32,76 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update()
-    { 
+    {
+        Move();
+        Dash();
+        Attack();
 
-        if(Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
+    }
+
+    void Move()
+    {
+        if (controller.isGrounded)
+            verticalVelocity = -gravity * Time.deltaTime;
+        else
+            verticalVelocity -= gravity * Time.deltaTime;
+
+        if (Input.GetButton("Jump") && controller.isGrounded)
         {
-            isDashing = true;
-            moveVector.x = Mathf.Sign(moveVector.x) * dashSpeed;
-            verticalVelocity = 0;
-            moveVector.y = verticalVelocity;
-            moveVector.z = 0f;
+            _iMove = new Jump();
+            _iMove.Move(this);
         }
+
+        else if (dashingTime == 0)
+        {
+            _iMove = new HorizontalMovement();
+            _iMove.Move(this);
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
+        {
+            _iMove = new Dash();
+            _iMove.Move(this);
+        }
+        controller.Move(moveVector * Time.deltaTime);
+    }
+
+    void Dash()
+    {
+        if (isDashing && dashingTime <= dashTimer)
+            dashingTime += Time.deltaTime;
+        else
+            dashingTime = 0;
 
         if (controller.isGrounded)
+            isDashing = false;
+    }
+
+    void Attack()
+    {
+        if (Input.GetKeyDown(KeyCode.Y))
         {
-            verticalVelocity = -gravity * Time.deltaTime;
-            if (Input.GetButtonDown("Jump"))
-            {
-                verticalVelocity = jumpForce;
-            }
-        }
-        else
-        {
-            verticalVelocity -= gravity * Time.deltaTime;
+            _iAttack = new NormalAttack();
+            _iAttack.Attack(attackColliders[0], transform);
         }
 
-        if(isDashing && dashingTime <= dashTimer)
+        if (Input.GetKeyDown(KeyCode.U))
         {
-            dashingTime += Time.deltaTime;
+            _iAttack = new UpAttack();
+            _iAttack.Attack(attackColliders[0], transform);
         }
 
-        else
+        if (Input.GetKeyDown(KeyCode.I))
         {
-            if (controller.isGrounded)
-                isDashing = false;
-            dashingTime = 0;
-            moveVector = Vector3.zero;
-            moveVector.x = Input.GetAxis("Horizontal") * moveSpeed;
-            moveVector.y = verticalVelocity;
-            moveVector.z = 0f;
+            _iAttack = new DownAttack();
+            _iAttack.Attack(attackColliders[0], transform);
         }
-        
-        controller.Move(moveVector * Time.deltaTime);
-
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (!controller.isGrounded && Vector3.Angle(transform.up, hit.normal) == 180)
         {
-            //Opcion I
-            //verticalVelocity = -Mathf.Abs(verticalVelocity / 2);
-
-            //Opcion II
             if (verticalVelocity != 0)
                 verticalVelocity = 0;
             verticalVelocity -= gravity * Time.deltaTime;
