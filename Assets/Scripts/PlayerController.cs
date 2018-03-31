@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
         else
             verticalVelocity -= gravity * Time.deltaTime;
 
-        if (Input.GetButton("Jump") && controller.isGrounded)
+        if (InputManager.AButton() && controller.isGrounded)
         {
             _iMove = new Jump();
             _iMove.Move(this);
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
             _iMove.Move(this);
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
+        if (InputManager.LBButton() && !isDashing)
         {
             _iMove = new Dash();
             _iMove.Move(this);
@@ -79,20 +79,23 @@ public class PlayerController : MonoBehaviour
 
     void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (InputManager.XButton())
         {
+            Debug.Log("Normal_J");
             _iAttack = new NormalAttack();
             _iAttack.Attack(attackColliders[0], transform);
         }
 
-        if (Input.GetKeyDown(KeyCode.U))
+        if (InputManager.YButton())
         {
+            Debug.Log("Up_J");
             _iAttack = new UpAttack();
             _iAttack.Attack(attackColliders[0], transform);
         }
 
-        if (Input.GetKeyDown(KeyCode.I))
+        if (InputManager.BButton())
         {
+            Debug.Log("Down_J");
             _iAttack = new DownAttack();
             _iAttack.Attack(attackColliders[0], transform);
         }
