@@ -12,31 +12,30 @@ public class PlayerController : MonoBehaviour
     public float gravity;
     public float verticalVelocity;
 
-    public float dashDistance;
-    public float dashSpeed;
-    public float dashTimer;
-    public float dashingTime;
+    public float dashCoolDown;
     public bool isDashing;
+    public bool canDash = true;
 
     private IMove _iMove;
     private IAttack _iAttack;
 
     public Collider[] attackColliders;
+    private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        dashSpeed = 50;
-        dashDistance = 7;
-        dashTimer = dashDistance / dashSpeed;
+        dashCoolDown = 3f;
+
+        hability.Add(typeof(Dash).ToString(), new Dash(this, dashCoolDown));
     }
 
     void Update()
     {
         Move();
-        Dash();
+        Habilities();
         Attack();
-
+        controller.Move(moveVector * Time.deltaTime);
     }
 
     void Move()
@@ -52,29 +51,20 @@ public class PlayerController : MonoBehaviour
             _iMove.Move(this);
         }
 
-        else if (dashingTime == 0)
+        else if (!isDashing)
         {
             _iMove = new HorizontalMovement();
             _iMove.Move(this);
         }
-
-        if (InputManager.LBButton() && !isDashing)
-        {
-            _iMove = new Dash();
-            _iMove.Move(this);
-        }
-        controller.Move(moveVector * Time.deltaTime);
     }
 
-    void Dash()
+    void Habilities()
     {
-        if (isDashing && dashingTime <= dashTimer)
-            dashingTime += Time.deltaTime;
-        else
-            dashingTime = 0;
+        foreach (var h in hability.Values)
+            h.Update();
 
-        if (controller.isGrounded)
-            isDashing = false;
+        if (InputManager.LBButton() && canDash)
+            hability["Dash"].Hability();
     }
 
     void Attack()
