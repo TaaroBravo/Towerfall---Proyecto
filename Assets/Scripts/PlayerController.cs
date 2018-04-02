@@ -12,22 +12,26 @@ public class PlayerController : MonoBehaviour
     public float gravity;
     public float verticalVelocity;
 
+    public float normalAttackCoolDown;
+    public float upAttackCoolDown;
+    public float downAttackCoolDown;
+
     public float dashCoolDown;
     public bool isDashing;
     public bool canDash = true;
 
     private IMove _iMove;
-    private IAttack _iAttack;
 
     public Collider[] attackColliders;
+    private Dictionary<string, IAttack> attacks = new Dictionary<string, IAttack>();
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        dashCoolDown = 3f;
 
-        hability.Add(typeof(Dash).ToString(), new Dash(this, dashCoolDown));
+        SetAttacks();
+        SetHabilities();
     }
 
     void Update()
@@ -69,26 +73,17 @@ public class PlayerController : MonoBehaviour
 
     void Attack()
     {
+        foreach (var a in attacks.Values)
+            a.Update();
+
         if (InputManager.XButton())
-        {
-            Debug.Log("Normal_J");
-            _iAttack = new NormalAttack();
-            _iAttack.Attack(attackColliders[0], transform);
-        }
+            attacks["NormalAttack"].Attack(attackColliders[0]);
 
         if (InputManager.YButton())
-        {
-            Debug.Log("Up_J");
-            _iAttack = new UpAttack();
-            _iAttack.Attack(attackColliders[0], transform);
-        }
+            attacks["UpAttack"].Attack(attackColliders[0]);
 
         if (InputManager.BButton())
-        {
-            Debug.Log("Down_J");
-            _iAttack = new DownAttack();
-            _iAttack.Attack(attackColliders[0], transform);
-        }
+            attacks["DownAttack"].Attack(attackColliders[0]);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -99,5 +94,21 @@ public class PlayerController : MonoBehaviour
                 verticalVelocity = 0;
             verticalVelocity -= gravity * Time.deltaTime;
         }
+    }
+
+    private void SetAttacks()
+    {
+        normalAttackCoolDown = 0.25f;
+        upAttackCoolDown = 1f;
+        downAttackCoolDown = 1f;
+        attacks.Add(typeof(NormalAttack).ToString(), new NormalAttack(this, normalAttackCoolDown));
+        attacks.Add(typeof(UpAttack).ToString(), new UpAttack(this, upAttackCoolDown));
+        attacks.Add(typeof(DownAttack).ToString(), new DownAttack(this, downAttackCoolDown));
+    }
+
+    private void SetHabilities()
+    {
+        dashCoolDown = 3f;
+        hability.Add(typeof(Dash).ToString(), new Dash(this, dashCoolDown));
     }
 }

@@ -4,17 +4,35 @@ using UnityEngine;
 
 public class NormalAttack : IAttack
 {
-    public void Attack(Collider col, Transform player)
+    public NormalAttack(PlayerController pl, float _timerCoolDown = 0)
     {
-        Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * 2.2f, col.transform.rotation, LayerMask.GetMask("Hitbox"));
-        foreach (Collider c in cols)
+        player = pl;
+        timerCoolDownAttack = _timerCoolDown;
+        coolDownAttack = _timerCoolDown;
+        weaponExtends = 4;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+    }
+
+    public override void Attack(Collider col)
+    {
+        if(timerCoolDownAttack < 0)
         {
-            //Cambiar el c.transform.parent si algo cambia de la estructura
-            if (c.transform.parent.parent == player.transform)
-                continue;
-            //Hacer daño
-            PlayerTwoTest enemy = c.transform.parent.GetComponent<PlayerTwoTest>();
-            enemy.ReceiveDamage("Normal");
+            Debug.Log("Normal_J");
+            Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
+            foreach (Collider c in cols)
+            {
+                if (CheckParently(c.transform))
+                    continue;
+                //Hacer daño
+                PlayerTwoTest target = TargetScript(c.transform);
+                if (target != null)
+                    target.ReceiveDamage("Normal");
+            }
+            timerCoolDownAttack = coolDownAttack;
         }
     }
 }

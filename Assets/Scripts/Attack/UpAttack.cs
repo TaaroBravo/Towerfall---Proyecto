@@ -4,18 +4,35 @@ using UnityEngine;
 
 public class UpAttack : IAttack
 {
-
-    public void Attack(Collider col, Transform player)
+    public UpAttack(PlayerController pl, float _timerCoolDown = 0)
     {
-        Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * 2.2f, col.transform.rotation, LayerMask.GetMask("Hitbox"));
-        foreach (Collider c in cols)
+        player = pl;
+        timerCoolDownAttack = _timerCoolDown;
+        coolDownAttack = _timerCoolDown;
+        weaponExtends = 5;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+    }
+
+    public override void Attack(Collider col)
+    {
+        if (timerCoolDownAttack < 0)
         {
-            //Cambiar el c.transform.parent si algo cambia de la estructura
-            if (c.transform.parent.parent == player.transform)
-                continue;
-            //Hacer daño
-            PlayerTwoTest enemy = c.transform.parent.GetComponent<PlayerTwoTest>();
-            enemy.ReceiveDamage("Up");
+            Debug.Log("Up_J");
+            Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
+            foreach (Collider c in cols)
+            {
+                if(CheckParently(c.transform))
+                    continue;
+                //Hacer daño
+                PlayerTwoTest target = TargetScript(c.transform);
+                if(target != null)
+                    target.ReceiveDamage("Up");
+            }
+            timerCoolDownAttack = coolDownAttack;
         }
     }
 }
