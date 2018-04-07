@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,28 +21,22 @@ public class PlayerController : MonoBehaviour
     public bool isDashing;
     public bool canDash = true;
 
+    public bool canJump;
+
     private IMove _iMove;
 
     public Collider[] attackColliders;
     private Dictionary<string, IAttack> attacks = new Dictionary<string, IAttack>();
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
 
-    private Vector3 _residualVelocity;
-    public Vector3 residualVelocity
-    {
-        get
-        {
-            return _residualVelocity;
-        }
-        set
-        {
-            if (_residualVelocity.magnitude < maxVelocity)
-                _residualVelocity = value;
-            else
-                _residualVelocity -= _residualVelocity / 2 * Time.deltaTime;
-        }
-    }
-    public float maxVelocity;
+    public Vector3 impactVelocity;
+
+    public float impactSpeed = 20; //En realidad 40?
+    public float impactDistance;
+    public float impactMaxTimer;
+    public float impactTimerF;
+
+    public bool stuned;
 
     void Start()
     {
@@ -49,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
         SetAttacks();
         SetHabilities();
+        SetImpacts();
     }
 
     void Update()
@@ -56,27 +52,48 @@ public class PlayerController : MonoBehaviour
         Move();
         Habilities();
         Attack();
+        if (stuned)
+            StunUpdate();
         controller.Move(moveVector * Time.deltaTime);
     }
 
-    void Move()
+    public void Move()
     {
-        if (controller.isGrounded)
-            verticalVelocity = -gravity * Time.deltaTime;
+        if (stuned)
+        {
+            moveVector.x = impactVelocity.x;
+            moveVector.y = impactVelocity.y;
+        }
         else
-            verticalVelocity -= gravity * Time.deltaTime;
-
-        if (InputManager.AButton() && controller.isGrounded)
         {
-            _iMove = new Jump();
-            _iMove.Move(this);
+            if (canJump && controller.isGrounded)
+            {
+                _iMove = new Jump();
+                _iMove.Move(this);
+                canJump = false;
+            }
+            else if (!isDashing)
+            {
+                _iMove = new HorizontalMovement();
+                _iMove.Move(this);
+            }
         }
+    }
 
-        else if (!isDashing)
-        {
-            _iMove = new HorizontalMovement();
-            _iMove.Move(this);
-        }
+    public void AttackNormal()
+    {
+        Debug.Log(2);
+        attacks["NormalAttack"].Attack(attackColliders[0]);
+    }
+
+    public void AttackDown()
+    {
+        attacks["DownAttack"].Attack(attackColliders[0]);
+    }
+
+    public void AttackUp()
+    {
+        attacks["UpAttack"].Attack(attackColliders[0]);
     }
 
     void Habilities()
@@ -84,23 +101,32 @@ public class PlayerController : MonoBehaviour
         foreach (var h in hability.Values)
             h.Update();
 
-        if (InputManager.LBButton() && canDash)
-            hability["Dash"].Hability();
+        //if (InputManager.LBButton() && canDash)
+        //    hability["Dash"].Hability();
     }
 
     void Attack()
     {
         foreach (var a in attacks.Values)
             a.Update();
+    }
 
-        if (InputManager.XButton())
-            attacks["NormalAttack"].Attack(attackColliders[0]);
+    public void ReceiveDamage(Vector3 impact)
+    {
+        impactVelocity = impact;
+        stuned = true;
+        impactTimerF = 0;
+    }
 
-        if (InputManager.YButton())
-            attacks["UpAttack"].Attack(attackColliders[0]);
-
-        if (InputManager.BButton())
-            attacks["DownAttack"].Attack(attackColliders[0]);
+    private void StunUpdate()
+    {
+        impactTimerF += Time.deltaTime;
+        if (impactTimerF > impactMaxTimer)
+        {
+            stuned = false;
+            impactTimerF = 0;
+            impactVelocity = Vector3.zero;
+        }
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -127,5 +153,11 @@ public class PlayerController : MonoBehaviour
     {
         dashCoolDown = 3f;
         hability.Add(typeof(Dash).ToString(), new Dash(this, dashCoolDown));
+    }
+
+    private void SetImpacts()
+    {
+        impactDistance = 15;
+        impactMaxTimer = impactDistance / impactSpeed;
     }
 }

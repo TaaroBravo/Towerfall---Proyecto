@@ -29,7 +29,7 @@ public class UpAttack : IAttack
                 if(CheckParently(c.transform))
                     continue;
                 //Hacer daño
-                PlayerTwoTest target = TargetScript(c.transform);
+                PlayerController target = TargetScript(c.transform);
                 if(target != null)
                     target.ReceiveDamage(new Vector3(0, impactVelocity, 0));
             }

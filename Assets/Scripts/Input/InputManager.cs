@@ -45,9 +45,9 @@ public static class InputManager {
         return Input.GetButtonDown("Y_Button");
     }
 
-    public static bool LBButton()
-    {
-        return Input.GetButtonDown("LB_Button");
-    }
+    //public static bool LBButton()
+    //{
+    //    return Input.GetButtonDown("LB_Button");
+    //}
 
 }

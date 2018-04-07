@@ -20,7 +20,7 @@ public class NormalAttack : IAttack
 
     public override void Attack(Collider col)
     {
-        if(timerCoolDownAttack < 0)
+        if (timerCoolDownAttack < 0)
         {
             Debug.Log("Normal_J");
             Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
@@ -29,7 +29,7 @@ public class NormalAttack : IAttack
                 if (CheckParently(c.transform))
                     continue;
                 //Hacer daño
-                PlayerTwoTest target = TargetScript(c.transform);
+                PlayerController target = TargetScript(c.transform);
                 if (target != null)
                     target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * impactVelocity, 0, 0));
             }

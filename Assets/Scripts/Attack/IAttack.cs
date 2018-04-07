@@ -26,10 +26,10 @@ abstract public class IAttack
         return CheckParently(t.parent);
     }
 
-    public PlayerTwoTest TargetScript(Transform t)
+    public PlayerController TargetScript(Transform t)
     {
-        if (t.GetComponent<PlayerTwoTest>())
-            return t.GetComponent<PlayerTwoTest>();
+        if (t.GetComponent<PlayerController>())
+            return t.GetComponent<PlayerController>();
         if (t.parent == null)
             return null;
         return TargetScript(t.parent);
