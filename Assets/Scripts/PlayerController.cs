@@ -131,12 +131,17 @@ public class PlayerController : MonoBehaviour
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (!controller.isGrounded && Vector3.Angle(transform.up, hit.normal) == 180)
+        var dir = Vector3.Dot(transform.up, hit.normal);
+        if (dir == -1)
         {
             if (verticalVelocity != 0)
                 verticalVelocity = 0;
             verticalVelocity -= gravity * Time.deltaTime;
         }
+        else if (dir == 0)
+            stuned = false;
+        else
+            canJump = false;
     }
 
     private void SetAttacks()
