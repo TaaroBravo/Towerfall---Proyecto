@@ -26,6 +26,23 @@ public class PlayerController : MonoBehaviour
     private Dictionary<string, IAttack> attacks = new Dictionary<string, IAttack>();
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
 
+    private Vector3 _residualVelocity;
+    public Vector3 residualVelocity
+    {
+        get
+        {
+            return _residualVelocity;
+        }
+        set
+        {
+            if (_residualVelocity.magnitude < maxVelocity)
+                _residualVelocity = value;
+            else
+                _residualVelocity -= _residualVelocity / 2 * Time.deltaTime;
+        }
+    }
+    public float maxVelocity;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();

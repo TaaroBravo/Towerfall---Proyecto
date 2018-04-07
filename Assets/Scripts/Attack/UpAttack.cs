@@ -10,6 +10,7 @@ public class UpAttack : IAttack
         timerCoolDownAttack = _timerCoolDown;
         coolDownAttack = _timerCoolDown;
         weaponExtends = 5;
+        impactVelocity = 40;
     }
 
     public override void Update()
@@ -30,7 +31,7 @@ public class UpAttack : IAttack
                 //Hacer daño
                 PlayerTwoTest target = TargetScript(c.transform);
                 if(target != null)
-                    target.ReceiveDamage("Up");
+                    target.ReceiveDamage(new Vector3(0, impactVelocity, 0));
             }
             timerCoolDownAttack = coolDownAttack;
         }

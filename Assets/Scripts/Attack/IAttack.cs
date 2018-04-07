@@ -9,6 +9,7 @@ abstract public class IAttack
     public float coolDownAttack;
     //Este valor va a cambiar con el tema de las animaciones y dependiendo el heroe y el arma.
     public float weaponExtends;
+    public float impactVelocity;
 
     public abstract void Attack(Collider col);
     public virtual void Update()
