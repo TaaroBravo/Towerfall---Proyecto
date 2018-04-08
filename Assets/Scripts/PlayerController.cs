@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private IMove _iMove;
 
     public Collider[] attackColliders;
+    private Dictionary<string, IMove> myMoves = new Dictionary<string, IMove>();
     private Dictionary<string, IAttack> attacks = new Dictionary<string, IAttack>();
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
 
@@ -42,9 +43,10 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
 
+        SetMovements();
         SetAttacks();
         SetHabilities();
-        SetImpacts();
+        //SetImpacts();
     }
 
     void Update()
@@ -59,6 +61,9 @@ public class PlayerController : MonoBehaviour
 
     public void Move()
     {
+        foreach (var m in myMoves.Values)
+            m.Update();
+
         if (stuned)
         {
             moveVector.x = impactVelocity.x;
@@ -68,21 +73,16 @@ public class PlayerController : MonoBehaviour
         {
             if (canJump && controller.isGrounded)
             {
-                _iMove = new Jump();
-                _iMove.Move(this);
+                myMoves["Jump"].Move();
                 canJump = false;
             }
             else if (!isDashing)
-            {
-                _iMove = new HorizontalMovement();
-                _iMove.Move(this);
-            }
+                myMoves["HorizontalMovement"].Move();
         }
     }
 
     public void AttackNormal()
     {
-        Debug.Log(2);
         attacks["NormalAttack"].Attack(attackColliders[0]);
     }
 
@@ -114,6 +114,7 @@ public class PlayerController : MonoBehaviour
     public void ReceiveDamage(Vector3 impact)
     {
         impactVelocity = impact;
+        SetImpacts();
         stuned = true;
         impactTimerF = 0;
     }
@@ -144,6 +145,12 @@ public class PlayerController : MonoBehaviour
             canJump = false;
     }
 
+    private void SetMovements()
+    {
+        myMoves.Add(typeof(HorizontalMovement).ToString(), new HorizontalMovement(this));
+        myMoves.Add(typeof(Jump).ToString(), new Jump(this));
+    }
+
     private void SetAttacks()
     {
         normalAttackCoolDown = 0.25f;
@@ -162,7 +169,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetImpacts()
     {
-        impactDistance = 15;
+        impactDistance = Mathf.Abs(impactVelocity.x);
         impactMaxTimer = impactDistance / impactSpeed;
     }
 }

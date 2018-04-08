@@ -10,7 +10,7 @@ public class NormalAttack : IAttack
         timerCoolDownAttack = _timerCoolDown;
         coolDownAttack = _timerCoolDown;
         weaponExtends = 4;
-        impactVelocity = 40;
+        impactVelocity = 2;
     }
 
     public override void Update()
@@ -29,7 +29,7 @@ public class NormalAttack : IAttack
                     continue;
                 PlayerController target = TargetScript(c.transform);
                 if (target != null)
-                    target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * impactVelocity, 0, 0));
+                    target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * impactVelocity * Mathf.Abs(player.moveVector.x), 0, 0));
             }
             timerCoolDownAttack = coolDownAttack;
         }

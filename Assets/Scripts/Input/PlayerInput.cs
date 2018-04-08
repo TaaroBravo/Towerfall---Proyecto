@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour {
 
-    public string controller;
+    public Controller controller;
     public int id;
 
     PlayerController player;
@@ -15,6 +15,12 @@ public class PlayerInput : MonoBehaviour {
     public string downAttack;
     public string upAttack;
     public string habilityButton;
+
+    public enum Controller
+    {
+        J,
+        K
+    }
 
     private void Start()
     {
@@ -38,18 +44,18 @@ public class PlayerInput : MonoBehaviour {
     public float MainHorizontal()
     {
         float r = 0.0f;
-        r += Input.GetAxis("J_MainHorizontal_P" + id);
+        r += Input.GetAxis(controller.ToString() + "_MainHorizontal_P" + id);
         return Mathf.Clamp(r, -1.0f, 1.0f);
     }
 
     public void SetPlayerInput()
     {
-        horizontalMove = controller + "_MainHorizontal_P" + id;
-        verticalMove = controller + "_MainVertical_P" + id;
-        jumpButton = controller + "_JumpButton_P" + id;
-        normalAttack = controller + "_NormalAttack_P" + id;
-        downAttack = controller + "_DownAttack_P" + id;
-        upAttack = controller + "_UpAttack_P" + id;
-        habilityButton = controller + "_Hability_P" + id;
+        horizontalMove = controller.ToString() + "_MainHorizontal_P" + id;
+        verticalMove = controller.ToString() + "_MainVertical_P" + id;
+        jumpButton = controller.ToString() + "_JumpButton_P" + id;
+        normalAttack = controller.ToString() + "_NormalAttack_P" + id;
+        downAttack = controller.ToString() + "_DownAttack_P" + id;
+        upAttack = controller.ToString() + "_UpAttack_P" + id;
+        habilityButton = controller.ToString() + "_Hability_P" + id;
     }
 }
