@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     private IMove _iMove;
 
     public Collider[] attackColliders;
-    private Dictionary<string, IMove> myMoves = new Dictionary<string, IMove>();
+    //private Dictionary<string, IMove> myMoves = new Dictionary<string, IMove>();
     private Dictionary<string, IAttack> attacks = new Dictionary<string, IAttack>();
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
 
@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
 
-        SetMovements();
+        //SetMovements();
         SetAttacks();
         SetHabilities();
     }
@@ -60,7 +60,10 @@ public class PlayerController : MonoBehaviour
 
     public void Move()
     {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6c7917c4857b81c4425f5b38ea36adc2bbaa2204
         if (stuned)
         {
             moveVector.x = impactVelocity.x;
@@ -72,11 +75,15 @@ public class PlayerController : MonoBehaviour
                 m.Update();
             if (canJump && controller.isGrounded)
             {
-                myMoves["Jump"].Move();
+                _iMove = new Jump();
+                _iMove.Move(this);
                 canJump = false;
             }
             else if (!isDashing)
-                myMoves["HorizontalMovement"].Move();
+            {
+                _iMove = new HorizontalMovement();
+                _iMove.Move(this);
+            }
         }
     }
 
@@ -143,7 +150,11 @@ public class PlayerController : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         var dir = Vector3.Dot(transform.up, hit.normal);
+<<<<<<< HEAD
         if (!controller.isGrounded && dir == -1)
+=======
+        if (!controller.isGrounded && Vector3.Angle(transform.up, hit.normal) == 180)
+>>>>>>> 6c7917c4857b81c4425f5b38ea36adc2bbaa2204
         {
             verticalVelocity =  -7;
             moveVector.y = verticalVelocity;
@@ -163,11 +174,11 @@ public class PlayerController : MonoBehaviour
             canJump = false;
     }
 
-    private void SetMovements()
-    {
-        myMoves.Add(typeof(HorizontalMovement).ToString(), new HorizontalMovement(this));
-        myMoves.Add(typeof(Jump).ToString(), new Jump(this));
-    }
+    //private void SetMovements()
+    //{
+    //    myMoves.Add(typeof(HorizontalMovement).ToString(), new HorizontalMovement(this));
+    //    myMoves.Add(typeof(Jump).ToString(), new Jump(this));
+    //}
 
     private void SetAttacks()
     {
@@ -187,7 +198,12 @@ public class PlayerController : MonoBehaviour
 
     private void SetImpacts()
     {
+<<<<<<< HEAD
         impactSpeed = Mathf.Abs(impactVelocity.magnitude);
         impactMaxTimer = impactSpeed / 60;
+=======
+        impactDistance = 15;
+        impactMaxTimer = impactDistance / impactSpeed;
+>>>>>>> 6c7917c4857b81c4425f5b38ea36adc2bbaa2204
     }
 }

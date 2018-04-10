@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class HorizontalMovement : IMove {
 
-    float movement;
-    float maxSpeedTimer;
-    float currentSpeedTimer;
-    public HorizontalMovement(PlayerController pl)
+    public void Move(PlayerController pl)
     {
+<<<<<<< HEAD
         player = pl;
         currentSpeedTimer = 1;
         maxSpeedTimer = 1.5f;
@@ -41,5 +39,16 @@ public class HorizontalMovement : IMove {
         player.moveVector.x = movement * currentSpeedTimer * player.moveSpeed + player.impactVelocity.x;
         player.moveVector.y = player.verticalVelocity;
         player.moveVector.z = 0;
+=======
+        if (pl.controller.isGrounded)
+            pl.verticalVelocity = -pl.gravity * Time.deltaTime;
+        else
+            pl.verticalVelocity -= pl.gravity * Time.deltaTime;
+
+        pl.moveVector.x = pl.GetComponent<PlayerInput>().MainHorizontal() * pl.moveSpeed + pl.impactVelocity.x;
+        pl.moveVector.y = pl.verticalVelocity;
+        pl.moveVector.z = 0;
+
+>>>>>>> 6c7917c4857b81c4425f5b38ea36adc2bbaa2204
     }
 }

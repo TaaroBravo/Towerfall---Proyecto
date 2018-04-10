@@ -4,14 +4,9 @@ using UnityEngine;
 
 public class Jump : IMove {
 
-    public Jump(PlayerController pl)
+    public void Move(PlayerController pl)
     {
-        player = pl;
-    }
-
-    public override void Move()
-    {
-        player.verticalVelocity = player.jumpForce;
-        player.moveVector.y = player.verticalVelocity;
+        pl.verticalVelocity = pl.jumpForce;
+        pl.moveVector.y = pl.verticalVelocity;
     }
 }
