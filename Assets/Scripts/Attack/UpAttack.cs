@@ -9,8 +9,9 @@ public class UpAttack : IAttack
         player = pl;
         timerCoolDownAttack = _timerCoolDown;
         coolDownAttack = _timerCoolDown;
-        weaponExtends = 5;
-        impactVelocity = 2;
+        weaponExtends = 15;
+        impactVelocity = 1.3f;
+        defaultAttack = 7.5f;
     }
 
     public override void Update()
@@ -22,7 +23,6 @@ public class UpAttack : IAttack
     {
         if (timerCoolDownAttack < 0)
         {
-            Debug.Log("Up_J");
             Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
             foreach (Collider c in cols)
             {
@@ -30,7 +30,7 @@ public class UpAttack : IAttack
                     continue;
                 PlayerController target = TargetScript(c.transform);
                 if(target != null)
-                    target.ReceiveDamage(new Vector3(0, impactVelocity * Mathf.Abs(player.moveVector.x), 0));
+                    target.ReceiveDamage(new Vector3(0, impactVelocity * Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x), 0));
             }
             timerCoolDownAttack = coolDownAttack;
         }

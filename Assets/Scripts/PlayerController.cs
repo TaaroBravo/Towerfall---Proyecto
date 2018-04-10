@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     public Vector3 impactVelocity;
 
-    public float impactSpeed = 20; //En realidad 40?
+    public float impactSpeed = 20;
     public float impactDistance;
     public float impactMaxTimer;
     public float impactTimerF;
@@ -46,7 +46,6 @@ public class PlayerController : MonoBehaviour
         SetMovements();
         SetAttacks();
         SetHabilities();
-        //SetImpacts();
     }
 
     void Update()
@@ -61,8 +60,6 @@ public class PlayerController : MonoBehaviour
 
     public void Move()
     {
-        foreach (var m in myMoves.Values)
-            m.Update();
 
         if (stuned)
         {
@@ -71,6 +68,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            foreach (var m in myMoves.Values)
+                m.Update();
             if (canJump && controller.isGrounded)
             {
                 myMoves["Jump"].Move();
@@ -113,9 +112,20 @@ public class PlayerController : MonoBehaviour
 
     public void ReceiveDamage(Vector3 impact)
     {
-        impactVelocity = impact;
-        SetImpacts();
-        stuned = true;
+        Vector3 impactRelax = Vector3.zero;
+        if (stuned && impactTimerF > 0.1f)
+        {
+            impactRelax = (impactVelocity.magnitude / 13) * impact;
+            impactRelax = new Vector3(impactRelax.x > 70 ? 70 : impactRelax.x, impactRelax.y > 70 ? 70 : impactRelax.y, 0);
+            impactVelocity = impactRelax;
+            SetImpacts();
+        }
+        else
+        {
+            impactVelocity = impact;
+            SetImpacts();
+            stuned = true;
+        }
         impactTimerF = 0;
     }
 
@@ -133,14 +143,22 @@ public class PlayerController : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         var dir = Vector3.Dot(transform.up, hit.normal);
-        if (dir == -1)
+        if (!controller.isGrounded && dir == -1)
         {
-            if (verticalVelocity != 0)
-                verticalVelocity = 0;
-            verticalVelocity -= gravity * Time.deltaTime;
+            verticalVelocity =  -7;
+            moveVector.y = verticalVelocity;
         }
-        else if (dir == 0)
-            stuned = false;
+        else if (!controller.isGrounded && Vector3.Angle(transform.up, hit.normal) >= 90)
+        {
+            Debug.Log(gameObject.name);
+            if (stuned)
+            {
+                moveVector = Vector3.zero;
+                verticalVelocity -= gravity * Time.deltaTime * 2;
+                stuned = false;
+            }
+
+        }
         else
             canJump = false;
     }
@@ -154,8 +172,8 @@ public class PlayerController : MonoBehaviour
     private void SetAttacks()
     {
         normalAttackCoolDown = 0.25f;
-        upAttackCoolDown = 1f;
-        downAttackCoolDown = 1f;
+        upAttackCoolDown = 0.25f;
+        downAttackCoolDown = 0.25f;
         attacks.Add(typeof(NormalAttack).ToString(), new NormalAttack(this, normalAttackCoolDown));
         attacks.Add(typeof(UpAttack).ToString(), new UpAttack(this, upAttackCoolDown));
         attacks.Add(typeof(DownAttack).ToString(), new DownAttack(this, downAttackCoolDown));
@@ -169,7 +187,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetImpacts()
     {
-        impactDistance = Mathf.Abs(impactVelocity.x);
-        impactMaxTimer = impactDistance / impactSpeed;
+        impactSpeed = Mathf.Abs(impactVelocity.magnitude);
+        impactMaxTimer = impactSpeed / 60;
     }
 }

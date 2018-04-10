@@ -9,8 +9,9 @@ public class DownAttack : IAttack
         player = pl;
         timerCoolDownAttack = _timerCoolDown;
         coolDownAttack = _timerCoolDown;
-        weaponExtends = 4;
+        weaponExtends = 15;
         impactVelocity = 2;
+        defaultAttack = 7.5f;
     }
 
     public override void Update()
@@ -22,7 +23,6 @@ public class DownAttack : IAttack
     {
         if (timerCoolDownAttack < 0)
         {
-            Debug.Log("Down_J");
             Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
             foreach (Collider c in cols)
             {
@@ -30,7 +30,7 @@ public class DownAttack : IAttack
                     continue;
                 PlayerController target = TargetScript(c.transform);
                 if (target != null)
-                    target.ReceiveDamage(new Vector3(0, -impactVelocity * Mathf.Abs(player.moveVector.x), 0));
+                    target.ReceiveDamage(new Vector3(0, -impactVelocity * Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x), 0));
             }
             timerCoolDownAttack = coolDownAttack;
         }

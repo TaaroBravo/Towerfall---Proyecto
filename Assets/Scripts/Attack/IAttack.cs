@@ -10,6 +10,7 @@ abstract public class IAttack
     //Este valor va a cambiar con el tema de las animaciones y dependiendo el heroe y el arma.
     public float weaponExtends;
     public float impactVelocity;
+    public float defaultAttack;
 
     public abstract void Attack(Collider col);
     public virtual void Update()
