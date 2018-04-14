@@ -4,6 +4,7 @@ using UnityEngine;
 
 abstract public class IHability {
 
+    public PlayerController player;
     public float timerCoolDown;
     public float coolDown;
 

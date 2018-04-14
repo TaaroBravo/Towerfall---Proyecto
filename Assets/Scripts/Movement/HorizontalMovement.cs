@@ -6,17 +6,20 @@ public class HorizontalMovement : IMove {
 
     float movement;
     float maxSpeedTimer;
+    float slowSpeedCharge;
     float currentSpeedTimer;
     public HorizontalMovement(PlayerController pl)
     {
         player = pl;
         currentSpeedTimer = 1;
-        maxSpeedTimer = 1.5f;
+        maxSpeedTimer = player.maxSpeedChargeTimer;
+        slowSpeedCharge = player.slowSpeedCharge;
     }
 
     public override void Update()
     {
         base.Update();
+
         if (player.controller.isGrounded)
             player.verticalVelocity = -player.gravity * Time.deltaTime;
         else
@@ -25,14 +28,14 @@ public class HorizontalMovement : IMove {
         movement = player.GetComponent<PlayerInput>().MainHorizontal();
         if (movement != 0)
         {
-            currentSpeedTimer += Time.deltaTime / 3;
+            currentSpeedTimer += Time.deltaTime / slowSpeedCharge;
             if (currentSpeedTimer >= maxSpeedTimer)
                 currentSpeedTimer = maxSpeedTimer;
         }
         else
         {
             currentSpeedTimer = 1;
-        }
+        }       
     }
 
     public override void Move()

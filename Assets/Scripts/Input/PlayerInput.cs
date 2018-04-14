@@ -14,7 +14,9 @@ public class PlayerInput : MonoBehaviour {
     public string normalAttack;
     public string downAttack;
     public string upAttack;
-    public string habilityButton;
+    public string hability1Button;
+    public string hability2Button;
+    public string hability3Button;
 
     public enum Controller
     {
@@ -32,6 +34,10 @@ public class PlayerInput : MonoBehaviour {
     {
         if (Input.GetButtonDown(jumpButton))
             player.canJump = true;
+        if (Input.GetButtonDown(hability1Button))
+                player.Dash();
+        if (Input.GetButtonDown(hability2Button))
+            player.FallOff();
         if (Input.GetButtonDown(normalAttack))
             player.AttackNormal();
         if (Input.GetButtonDown(downAttack))
@@ -56,6 +62,8 @@ public class PlayerInput : MonoBehaviour {
         normalAttack = controller.ToString() + "_NormalAttack_P" + id;
         downAttack = controller.ToString() + "_DownAttack_P" + id;
         upAttack = controller.ToString() + "_UpAttack_P" + id;
-        habilityButton = controller.ToString() + "_Hability_P" + id;
+        hability1Button = controller.ToString() + "_Hability1_P" + id;
+        hability2Button = controller.ToString() + "_Hability2_P" + id;
+        hability3Button = controller.ToString() + "_Hability3_P" + id;
     }
 }

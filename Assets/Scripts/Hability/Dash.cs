@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Dash : IHability {
 
-    PlayerController player;
-    public float dashSpeed = 50;
-    public float dashDistance = 7;
     public float dashingTime;
     public float dashTimer;
 
@@ -15,7 +12,7 @@ public class Dash : IHability {
         player = p;
         timerCoolDown = _timerCoolDown;
         coolDown = _timerCoolDown;
-        dashTimer = dashDistance / dashSpeed;
+        dashTimer = player.dashDistance / player.dashSpeed;
     }
 
     public override void Update()
@@ -40,7 +37,7 @@ public class Dash : IHability {
         {
             player.isDashing = true;
             player.canDash = false;
-            player.moveVector.x = player.moveVector.x != 0 ? Mathf.Sign(player.moveVector.x) * dashSpeed : dashSpeed;
+            player.moveVector.x = player.moveVector.x != 0 ? Mathf.Sign(player.moveVector.x) * player.dashSpeed : player.dashSpeed;
             player.verticalVelocity = 0;
             player.moveVector.y = player.verticalVelocity;
             timerCoolDown = coolDown;
