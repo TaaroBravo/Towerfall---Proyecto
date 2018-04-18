@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour
     private IMove _iMove;
 
     public Collider[] attackColliders;
+
     #region Dictionarys
     private Dictionary<string, IMove> myMoves = new Dictionary<string, IMove>();
     private Dictionary<string, IAttack> attacks = new Dictionary<string, IAttack>();

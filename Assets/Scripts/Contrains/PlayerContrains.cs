@@ -7,7 +7,12 @@ public class PlayerContrains : MonoBehaviour {
     Transform player;
     float myContrains_Z;
 
-	void Start ()
+    public float leftX;
+    public float rightX;
+
+    float buffer = 1f;
+
+    void Start ()
     {
         player = gameObject.transform;
         myContrains_Z = 0;
@@ -17,5 +22,19 @@ public class PlayerContrains : MonoBehaviour {
     {
         if (player.position.z != 0)
             player.position = new Vector3(player.position.x, player.position.y, myContrains_Z);
-	}
+        if (player.position.x < leftX - buffer)
+            OnMyLeft();
+        else if (player.position.x > rightX + buffer)
+            OnMyRight();
+    }
+
+    void OnMyLeft()
+    {
+        player.position = new Vector3(rightX, player.position.y, 0);
+    }
+
+    void OnMyRight()
+    {
+        player.position = new Vector3(leftX, player.position.y, 0);
+    }
 }

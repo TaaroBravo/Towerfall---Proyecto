@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bounds : MonoBehaviour {
+public class BoundsWeapon : MonoBehaviour {
 
     public Collider col;
     public int weaponExtends;
