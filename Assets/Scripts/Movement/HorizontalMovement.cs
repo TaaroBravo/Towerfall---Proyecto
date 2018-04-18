@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HorizontalMovement : IMove {
+public class HorizontalMovement : IMove
+{
 
     float movement;
     float maxSpeedTimer;
@@ -28,14 +29,20 @@ public class HorizontalMovement : IMove {
         movement = player.GetComponent<PlayerInput>().MainHorizontal();
         if (movement != 0)
         {
+            player.myAnim.Play("Run");
             currentSpeedTimer += Time.deltaTime / slowSpeedCharge;
+            if (currentSpeedTimer > 1 && !player.PS_Run.isPlaying)
+                player.PS_Run.Play();
+
             if (currentSpeedTimer >= maxSpeedTimer)
                 currentSpeedTimer = maxSpeedTimer;
         }
         else
         {
             currentSpeedTimer = 1;
-        }       
+            player.PS_Run.Stop();
+            player.myAnim.Play("Idle");
+        }
     }
 
     public override void Move()

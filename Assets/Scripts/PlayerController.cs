@@ -79,12 +79,16 @@ public class PlayerController : MonoBehaviour
 
 	public LifeUI myLifeUI;
 
+    public ParticleSystem PS_Run;
+    public ParticleSystem PS_Fall;
+    public Animator myAnim;
     void Start()
     {
         controller = GetComponent<CharacterController>();
         SetMovements();
         SetAttacks();
         SetHabilities();
+        myAnim = GetComponent<Animator>();
     }
 
     void Update()
@@ -185,6 +189,7 @@ public class PlayerController : MonoBehaviour
             SetImpacts();
             stuned = true;
         }
+        myAnim.Play("TakeDamage");
         currentImpactStunTimer = 0;
     }
 
@@ -225,7 +230,11 @@ public class PlayerController : MonoBehaviour
             canJump = false;
             if (!stuned)
                 impactVelocity = Vector3.zero;
-            isFalling = false;
+            if(isFalling)
+            {
+                PS_Fall.Play();
+                isFalling = false;
+            }
         }
     }
 
