@@ -16029,7 +16029,7 @@ MonoBehaviour:
   maxStunVelocityLimit: 70
   hitParticles: {fileID: 1027104012}
   attackColliders:
-  - {fileID: 528887217}
+  - {fileID: 1296568800}
   stuned: 0
   myLifeUI: {fileID: 924101054}
   PS_Run: {fileID: 1179311728}
@@ -36705,7 +36705,7 @@ MonoBehaviour:
   maxStunVelocityLimit: 70
   hitParticles: {fileID: 421265171}
   attackColliders:
-  - {fileID: 528887217}
+  - {fileID: 819986478}
   stuned: 0
   myLifeUI: {fileID: 502673250}
   PS_Run: {fileID: 898695349}
@@ -79242,7 +79242,7 @@ MonoBehaviour:
   maxStunVelocityLimit: 70
   hitParticles: {fileID: 908476546}
   attackColliders:
-  - {fileID: 528887217}
+  - {fileID: 1812847976}
   stuned: 0
   myLifeUI: {fileID: 1976360831}
   PS_Run: {fileID: 724384494}
