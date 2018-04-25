@@ -172,6 +172,7 @@ public class PlayerController : MonoBehaviour
 
     public void ReceiveDamage(Vector3 impact)
     {
+
         Vector3 impactRelax = Vector3.zero;
         if (stuned && currentImpactStunTimer > 0.1f)
         {
@@ -182,9 +183,10 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            Debug.Log(impact);
             impactRelax = impact;
             if(impact.magnitude >= maxNoStunVelocityLimit)
-                impactRelax = new Vector3(Mathf.Sign(impactRelax.x) * maxNoStunVelocityLimit, 0, 0);
+                impactRelax = new Vector3(impactRelax.x > 0 ? maxNoStunVelocityLimit : 0, impactRelax.y > 0 ? maxNoStunVelocityLimit : 0, 0);
             impactVelocity = impactRelax;
             SetImpacts();
             stuned = true;
@@ -247,9 +249,6 @@ public class PlayerController : MonoBehaviour
 
     private void SetAttacks()
     {
-        //normalAttackCoolDown = 0.25f;
-        //upAttackCoolDown = 0.25f;
-        //downAttackCoolDown = 0.25f;
         attacks.Add(typeof(NormalAttack).ToString(), new NormalAttack(this, normalAttackCoolDown));
         attacks.Add(typeof(UpAttack).ToString(), new UpAttack(this, upAttackCoolDown));
         attacks.Add(typeof(DownAttack).ToString(), new DownAttack(this, downAttackCoolDown));
