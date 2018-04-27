@@ -24,19 +24,22 @@ public class DestroyablePlatforms : MonoBehaviour
 
     public void DestroyablePlatform(PlayerController pl)
     {
-        if (!onlyFromAbove)
+        if (pl.stuned)
         {
-            lifeOfPlatform -= pl.impactSpeed;
-            acumulator += pl.impactSpeed / 2;
-            pl.impactVelocity = Vector3.zero;
-            GetComponent<Renderer>().material.color = Color.HSVToRGB(0, ((acumulator / 2) / maxLife), 0.8f);
-        }
-        else
-        {
-            lifeOfPlatform -= Mathf.Abs(pl.impactVelocity.y);
-            acumulator += (Mathf.Abs(pl.impactVelocity.y) / 2);
-            pl.impactVelocity = Vector3.zero;
-            GetComponent<Renderer>().material.color = Color.HSVToRGB(0, ((acumulator / 2) / maxLife), 0.8f);
-        }
+            if (!onlyFromAbove)
+            {
+                lifeOfPlatform -= pl.impactSpeed;
+                acumulator += pl.impactSpeed / 2;
+                pl.impactVelocity = Vector3.zero;
+                GetComponent<Renderer>().material.color = Color.HSVToRGB(0, ((acumulator / 2) / maxLife), 0.8f);
+            }
+            else
+            {
+                lifeOfPlatform -= Mathf.Abs(pl.impactVelocity.y);
+                acumulator += (Mathf.Abs(pl.impactVelocity.y) / 2);
+                pl.impactVelocity = Vector3.zero;
+                GetComponent<Renderer>().material.color = Color.HSVToRGB(0, ((acumulator / 2) / maxLife), 0.8f);
+            }
+        }      
     }
 }
