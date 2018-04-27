@@ -38,11 +38,13 @@ public class PlayerContrains : MonoBehaviour {
 
     void OnMyLeft()
     {
-        player.position = new Vector3(leftWarp.transform.position.x + buffer, -leftWarp.bounds.extents.y + (leftWarp.bounds.extents.y + player.position.y), 0);
+        var warpPos = leftWarp.transform.position.y - leftWarp.bounds.extents.y;
+        player.position = new Vector3(leftWarp.transform.position.x + buffer, warpPos, 0);
     }
 
     void OnMyRight()
     {
-        player.position = new Vector3(rightWarp.transform.position.x - buffer, -rightWarp.bounds.extents.y + (leftWarp.bounds.extents.y + player.position.y), 0);
+        var warpPos = rightWarp.transform.position.y - rightWarp.bounds.extents.y;
+        player.position = new Vector3(rightWarp.transform.position.x - buffer, warpPos, 0);
     }
 }
