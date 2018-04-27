@@ -12,7 +12,7 @@ public class NormalAttack : IAttack
         weaponExtends = player.weaponExtends;
         impactVelocity = player.impactVelocityNormal;
         defaultAttack = player.defaultAttackNormal;
-        influenceOfMovement = player.influenceOfMovement;
+        influenceOfMovement = player.influenceOfMovementNormal;
         chargedEffect = player.chargedEffect;
     }
 
@@ -35,7 +35,7 @@ public class NormalAttack : IAttack
                 player.hitParticles.Play();
                 if (target != null && !player.isCharged)
                     target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0, 0));
-                else
+                else if(target != null)
                 {
                     chargedEffect = player.chargedEffect;
                     target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * chargedEffect, 0, 0));

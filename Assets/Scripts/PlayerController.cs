@@ -31,14 +31,18 @@ public class PlayerController : MonoBehaviour
     public float impactVelocityNormal;
     public float defaultAttackNormal;
     public float normalAttackCoolDown;
+    public float influenceOfMovementNormal;
+
 
     public float impactVelocityUp;
     public float defaultAttackUp;
     public float upAttackCoolDown;
+    public float influenceOfMovementUp;
 
     public float impactVelocityDown;
     public float defaultAttackDown;
     public float downAttackCoolDown;
+    public float influenceOfMovementDown;
     #endregion
 
     #region Dash Variables
@@ -57,7 +61,6 @@ public class PlayerController : MonoBehaviour
     public float impactStunMaxTimer;
     public float currentImpactStunTimer;
     public float residualStunImpact;
-    public float influenceOfMovement;
 
     public float hitHeadReject;
     public float maxNoStunVelocityLimit;
@@ -103,8 +106,6 @@ public class PlayerController : MonoBehaviour
         Attack();
         if (isCharged)
             Charged();
-        else if(PS_Charged.isPlaying)
-                PS_Charged.Stop();
         if (stuned)
             StunUpdate();
         controller.Move(moveVector * Time.deltaTime);
@@ -191,6 +192,7 @@ public class PlayerController : MonoBehaviour
         {
             isCharged = false;
             hitCharged = false;
+            PS_Charged.Stop();
         }
     }
 
@@ -231,7 +233,7 @@ public class PlayerController : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (!controller.isGrounded && hit.gameObject.tag == "Destroyable")
-            hit.transform.SendMessage("DestroyablePlatform", this);
+            hit.transform.GetComponent<DestroyablePlatforms>().DestroyablePlatform(this);
 
         var dir = Vector3.Dot(transform.up, hit.normal);
         if (!controller.isGrounded && dir == -1)

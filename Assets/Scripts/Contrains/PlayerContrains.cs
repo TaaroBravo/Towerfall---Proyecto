@@ -7,8 +7,8 @@ public class PlayerContrains : MonoBehaviour {
     Transform player;
     float myContrains_Z;
 
-    public Transform leftWarp;
-    public Transform rightWarp;
+    public Collider leftWarp;
+    public Collider rightWarp;
 
     float buffer = 2f;
 
@@ -38,11 +38,11 @@ public class PlayerContrains : MonoBehaviour {
 
     void OnMyLeft()
     {
-        player.position = new Vector3(leftWarp.position.x + buffer, player.position.y, 0);
+        player.position = new Vector3(leftWarp.transform.position.x + buffer, -leftWarp.bounds.extents.y + (leftWarp.bounds.extents.y + player.position.y), 0);
     }
 
     void OnMyRight()
     {
-        player.position = new Vector3(rightWarp.position.x - buffer, player.position.y, 0);
+        player.position = new Vector3(rightWarp.transform.position.x - buffer, -rightWarp.bounds.extents.y + (leftWarp.bounds.extents.y + player.position.y), 0);
     }
 }

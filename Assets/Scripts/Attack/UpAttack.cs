@@ -12,7 +12,7 @@ public class UpAttack : IAttack
         weaponExtends = player.weaponExtends;
         impactVelocity = player.impactVelocityUp;
         defaultAttack = player.defaultAttackUp;
-        influenceOfMovement = player.influenceOfMovement;
+        influenceOfMovement = player.influenceOfMovementUp;
     }
 
     public override void Update()
@@ -34,11 +34,12 @@ public class UpAttack : IAttack
                 player.hitParticles.Play();
                 if(target != null && !player.isCharged)
                     target.ReceiveDamage(new Vector3(0, impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0));
-                else
+                else if(target != null)
                 {
                     chargedEffect = player.chargedEffect;
                     target.ReceiveDamage(new Vector3(0, chargedEffect, 0));
                     player.hitCharged = true;
+                    target.stuned = true;
                 }
             }
             timerCoolDownAttack = coolDownAttack;

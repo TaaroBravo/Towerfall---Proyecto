@@ -12,7 +12,7 @@ public class DownAttack : IAttack
         weaponExtends = player.weaponExtends;
         impactVelocity = player.impactVelocityDown;
         defaultAttack = player.defaultAttackDown;
-        influenceOfMovement = player.influenceOfMovement;
+        influenceOfMovement = player.influenceOfMovementDown;
     }
 
     public override void Update()
@@ -34,7 +34,7 @@ public class DownAttack : IAttack
                 player.hitParticles.Play();
                 if (target != null && !player.isCharged)
                     target.ReceiveDamage(new Vector3(0, -impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0));
-                else
+                else if(target != null)
                 {
                     chargedEffect = player.chargedEffect * 3;
                     target.ReceiveDamage(new Vector3(0, -player.chargedEffect, 0));

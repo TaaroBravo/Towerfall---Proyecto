@@ -40,6 +40,6 @@ public class DestroyablePlatforms : MonoBehaviour
                 pl.impactVelocity = Vector3.zero;
                 GetComponent<Renderer>().material.color = Color.HSVToRGB(0, ((acumulator / 2) / maxLife), 0.8f);
             }
-        }      
+        }
     }
 }

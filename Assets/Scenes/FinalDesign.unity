@@ -5114,7 +5114,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 41582876}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -38.58, y: 38.21, z: 0.64}
+  m_LocalPosition: {x: -38.23, y: 38.21, z: 0.64}
   m_LocalScale: {x: 2.1278002, y: 7.299258, z: 4.195986}
   m_Children:
   - {fileID: 812557041}
@@ -19254,8 +19254,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627e0f6157064eb49bcc799cf755ef45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftWarp: {fileID: 41582880}
-  rightWarp: {fileID: 2078446379}
+  leftWarp: {fileID: 41582878}
+  rightWarp: {fileID: 2078446377}
 --- !u!114 &197592536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19322,12 +19322,15 @@ MonoBehaviour:
   impactVelocityNormal: 1.3
   defaultAttackNormal: 7.5
   normalAttackCoolDown: 0.25
+  influenceOfMovementNormal: 0
   impactVelocityUp: 2
   defaultAttackUp: 7.5
   upAttackCoolDown: 0.25
+  influenceOfMovementUp: 0
   impactVelocityDown: 1.3
   defaultAttackDown: 7.5
   downAttackCoolDown: 0.25
+  influenceOfMovementDown: 0
   dashSpeed: 60
   dashDistance: 7
   dashCoolDown: 3
@@ -19339,7 +19342,6 @@ MonoBehaviour:
   impactStunMaxTimer: 0
   currentImpactStunTimer: 0
   residualStunImpact: 13
-  influenceOfMovement: 1
   hitHeadReject: 7
   maxNoStunVelocityLimit: 45
   maxStunVelocityLimit: 70
@@ -19350,7 +19352,7 @@ MonoBehaviour:
   chargedEffect: 0
   isCharged: 0
   hitCharged: 0
-  myLifeUI: {fileID: 502673250}
+  myLifeUI: {fileID: 924101054}
   PS_Charged: {fileID: 898695349}
   PS_Fall: {fileID: 737618672}
   myAnim: {fileID: 0}
@@ -23565,12 +23567,15 @@ MonoBehaviour:
   impactVelocityNormal: 50
   defaultAttackNormal: 0.5
   normalAttackCoolDown: 0.25
+  influenceOfMovementNormal: 0
   impactVelocityUp: 10
   defaultAttackUp: 1.5
   upAttackCoolDown: 0.25
+  influenceOfMovementUp: 0
   impactVelocityDown: 10
   defaultAttackDown: 10
   downAttackCoolDown: 0.25
+  influenceOfMovementDown: 0
   dashSpeed: 60
   dashDistance: 7
   dashCoolDown: 3
@@ -23582,7 +23587,6 @@ MonoBehaviour:
   impactStunMaxTimer: 0
   currentImpactStunTimer: 0
   residualStunImpact: 13
-  influenceOfMovement: 1
   hitHeadReject: 7
   maxNoStunVelocityLimit: 45
   maxStunVelocityLimit: 70
@@ -23593,7 +23597,7 @@ MonoBehaviour:
   chargedEffect: 0
   isCharged: 0
   hitCharged: 0
-  myLifeUI: {fileID: 502673250}
+  myLifeUI: {fileID: 521703387}
   PS_Charged: {fileID: 898695349}
   PS_Fall: {fileID: 737618672}
   myAnim: {fileID: 0}
@@ -23686,8 +23690,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627e0f6157064eb49bcc799cf755ef45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftWarp: {fileID: 41582880}
-  rightWarp: {fileID: 2078446379}
+  leftWarp: {fileID: 41582878}
+  rightWarp: {fileID: 2078446377}
 --- !u!1 &277925882
 GameObject:
   m_ObjectHideFlags: 0
@@ -24993,9 +24997,10 @@ GameObject:
   - component: {fileID: 328489087}
   - component: {fileID: 328489086}
   - component: {fileID: 328489085}
+  - component: {fileID: 328489090}
   m_Layer: 0
   m_Name: Jardin flotante B
-  m_TagString: Untagged
+  m_TagString: Destroyable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 127
@@ -25339,7 +25344,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 55296d1b6ee54e14e8eb4648d4b448ee, type: 2}
+  - {fileID: 2100000, guid: 8feffb37a6c3bba4c8970a4b37d63660, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -25372,6 +25377,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _entityType: 0
+--- !u!114 &328489090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 328489083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4d0620bef374b46bc81de44802e96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeOfPlatform: 100
+  onlyFromAbove: 0
 --- !u!1 &335614262
 GameObject:
   m_ObjectHideFlags: 0
@@ -29664,9 +29682,10 @@ GameObject:
   - component: {fileID: 377952496}
   - component: {fileID: 377952495}
   - component: {fileID: 377952494}
+  - component: {fileID: 377952499}
   m_Layer: 0
   m_Name: Jardin flotante A
-  m_TagString: Untagged
+  m_TagString: Destroyable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 127
@@ -30010,7 +30029,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 55296d1b6ee54e14e8eb4648d4b448ee, type: 2}
+  - {fileID: 2100000, guid: 8feffb37a6c3bba4c8970a4b37d63660, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -30043,6 +30062,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _entityType: 0
+--- !u!114 &377952499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 377952492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4d0620bef374b46bc81de44802e96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeOfPlatform: 100
+  onlyFromAbove: 0
 --- !u!1 &378131381
 GameObject:
   m_ObjectHideFlags: 0
@@ -35072,7 +35104,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh-52914
+  m_Name: pb_Mesh13662
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2
@@ -38177,9 +38209,10 @@ GameObject:
   - component: {fileID: 554177584}
   - component: {fileID: 554177583}
   - component: {fileID: 554177582}
+  - component: {fileID: 554177587}
   m_Layer: 0
   m_Name: Jardin flotante C
-  m_TagString: Untagged
+  m_TagString: Destroyable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 127
@@ -38523,7 +38556,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 55296d1b6ee54e14e8eb4648d4b448ee, type: 2}
+  - {fileID: 2100000, guid: 8feffb37a6c3bba4c8970a4b37d63660, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -38556,6 +38589,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _entityType: 0
+--- !u!114 &554177587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 554177580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4d0620bef374b46bc81de44802e96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeOfPlatform: 100
+  onlyFromAbove: 0
 --- !u!1 &559444574
 GameObject:
   m_ObjectHideFlags: 0
@@ -47844,8 +47890,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627e0f6157064eb49bcc799cf755ef45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftWarp: {fileID: 41582880}
-  rightWarp: {fileID: 2078446379}
+  leftWarp: {fileID: 41582878}
+  rightWarp: {fileID: 2078446377}
 --- !u!114 &655383192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47912,12 +47958,15 @@ MonoBehaviour:
   impactVelocityNormal: 20
   defaultAttackNormal: 0.5
   normalAttackCoolDown: 0.25
+  influenceOfMovementNormal: 0
   impactVelocityUp: 2
   defaultAttackUp: 7.5
   upAttackCoolDown: 0.25
+  influenceOfMovementUp: 0
   impactVelocityDown: 10
   defaultAttackDown: 10
   downAttackCoolDown: 0.25
+  influenceOfMovementDown: 0
   dashSpeed: 60
   dashDistance: 7
   dashCoolDown: 3
@@ -47929,7 +47978,6 @@ MonoBehaviour:
   impactStunMaxTimer: 0
   currentImpactStunTimer: 0
   residualStunImpact: 13
-  influenceOfMovement: 1
   hitHeadReject: 7
   maxNoStunVelocityLimit: 45
   maxStunVelocityLimit: 70
@@ -62381,7 +62429,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -591479170
+  randomSeed: -2091873341
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -95315,12 +95363,15 @@ MonoBehaviour:
   impactVelocityNormal: 20
   defaultAttackNormal: 0.5
   normalAttackCoolDown: 0.25
+  influenceOfMovementNormal: 0
   impactVelocityUp: 10
   defaultAttackUp: 1.5
   upAttackCoolDown: 0.25
+  influenceOfMovementUp: 0
   impactVelocityDown: 10
   defaultAttackDown: 10
   downAttackCoolDown: 0.25
+  influenceOfMovementDown: 0
   dashSpeed: 60
   dashDistance: 7
   dashCoolDown: 3
@@ -95328,11 +95379,10 @@ MonoBehaviour:
   canDash: 1
   impactVelocity: {x: 0, y: 0, z: 0}
   impactSpeed: 40
-  maxImpactToInfinitStun: 60
+  maxImpactToInfinitStun: 50
   impactStunMaxTimer: 0
   currentImpactStunTimer: 0
   residualStunImpact: 13
-  influenceOfMovement: 1
   hitHeadReject: 7
   maxNoStunVelocityLimit: 45
   maxStunVelocityLimit: 70
@@ -95343,7 +95393,7 @@ MonoBehaviour:
   chargedEffect: 0
   isCharged: 0
   hitCharged: 0
-  myLifeUI: {fileID: 502673250}
+  myLifeUI: {fileID: 1976360831}
   PS_Charged: {fileID: 898695349}
   PS_Fall: {fileID: 737618672}
   myAnim: {fileID: 0}
@@ -95436,8 +95486,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627e0f6157064eb49bcc799cf755ef45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftWarp: {fileID: 41582880}
-  rightWarp: {fileID: 2078446379}
+  leftWarp: {fileID: 41582878}
+  rightWarp: {fileID: 2078446377}
 --- !u!1 &1301853163
 GameObject:
   m_ObjectHideFlags: 0
@@ -123774,9 +123824,10 @@ GameObject:
   - component: {fileID: 1827741694}
   - component: {fileID: 1827741693}
   - component: {fileID: 1827741692}
+  - component: {fileID: 1827741695}
   m_Layer: 0
   m_Name: Puente_abajo
-  m_TagString: Untagged
+  m_TagString: Destroyable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123825,7 +123876,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: d24e3c2e180c0464c92177e4e5507071, type: 3}
+  - {fileID: 2100000, guid: 8feffb37a6c3bba4c8970a4b37d63660, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -123853,6 +123904,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1827741690}
   m_Mesh: {fileID: 4300000, guid: d24e3c2e180c0464c92177e4e5507071, type: 3}
+--- !u!114 &1827741695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1827741690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4d0620bef374b46bc81de44802e96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeOfPlatform: 200
+  onlyFromAbove: 1
 --- !u!1 &1848912063
 GameObject:
   m_ObjectHideFlags: 0
@@ -128813,7 +128877,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1808842247
+  randomSeed: 178530019
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -137145,7 +137209,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh-52896
+  m_Name: pb_Mesh15564
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2
@@ -155132,7 +155196,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1000196706
+  randomSeed: 283098564
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -158438,7 +158502,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh-52960
+  m_Name: pb_Mesh13978
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2
@@ -162135,7 +162199,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh-52964
+  m_Name: pb_Mesh13750
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2
@@ -162574,7 +162638,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2078446375}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 38.28, y: 38.21, z: 0.64}
+  m_LocalPosition: {x: 37.9, y: 38.21, z: 0.64}
   m_LocalScale: {x: 2.7539215, y: 7.299258, z: 4.195986}
   m_Children:
   - {fileID: 1268024495}
