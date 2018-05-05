@@ -45,7 +45,10 @@ public class HorizontalMovement : IMove
     public override void Move()
     {
         player.transform.eulerAngles = movement == 0 ? player.transform.eulerAngles : new Vector3(0, Mathf.Sign(player.moveVector.x) * 90, 0);
-        player.moveVector.x = movement * currentSpeedTimer * player.moveSpeed + player.impactVelocity.x;
+        if (!player.controller.isGrounded && movement == 0)
+            player.moveVector.x -= Mathf.Sign(player.moveVector.x) * 1.5f;
+        else
+            player.moveVector.x = movement * currentSpeedTimer * player.moveSpeed + player.impactVelocity.x;
         player.moveVector.y = player.verticalVelocity;
         player.moveVector.z = 0;
     }

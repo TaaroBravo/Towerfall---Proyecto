@@ -39,7 +39,7 @@ public class UpAttack : IAttack
                     chargedEffect = player.chargedEffect;
                     target.ReceiveDamage(new Vector3(0, chargedEffect, 0));
                     player.hitCharged = true;
-                    target.stuned = true;
+                    target.stunned = true;
                 }
             }
             timerCoolDownAttack = coolDownAttack;

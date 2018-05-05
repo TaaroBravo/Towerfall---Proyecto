@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 20;
     public bool canJump;
 
-    public bool isFalling;
+    public bool isFallingOff;
     public float fallOffSpeed;
     #endregion
 
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
     #endregion
 
-    public bool stuned;
+    public bool stunned;
 
     public float chargedEffect;
     public bool isCharged;
@@ -96,6 +96,7 @@ public class PlayerController : MonoBehaviour
         SetMovements();
         SetAttacks();
         SetHabilities();
+        myLifeUI.maxLife = myLife;
         myAnim = GetComponent<Animator>();
     }
 
@@ -106,7 +107,7 @@ public class PlayerController : MonoBehaviour
         Attack();
         if (isCharged)
             Charged();
-        if (stuned)
+        if (stunned)
             StunUpdate();
         controller.Move(moveVector * Time.deltaTime);
 
@@ -116,7 +117,7 @@ public class PlayerController : MonoBehaviour
 
     public void Move()
     {
-        if (stuned)
+        if (stunned)
         {
             moveVector.x = impactVelocity.x;
             moveVector.y = impactVelocity.y;
@@ -125,16 +126,17 @@ public class PlayerController : MonoBehaviour
         {
             foreach (var m in myMoves.Values)
                 m.Update();
-            if (canJump && controller.isGrounded && !isFalling)
+            if (canJump && controller.isGrounded && !isFallingOff)
             {
                 myMoves["Jump"].Move();
                 canJump = false;
             }
-            else if (!isDashing && !isFalling)
+            else if (!isDashing && !isFallingOff)
                 myMoves["HorizontalMovement"].Move();
         }
     }
 
+    #region Attacks
     void Attack()
     {
         foreach (var a in attacks.Values)
@@ -143,19 +145,19 @@ public class PlayerController : MonoBehaviour
 
     public void AttackNormal()
     {
-        if (!stuned && currentImpactStunTimer < 0.1f)
+        if (!stunned && currentImpactStunTimer < 0.1f)
             attacks["NormalAttack"].Attack(attackColliders[0]);
     }
 
     public void AttackDown()
     {
-        if (!stuned && currentImpactStunTimer < 0.1f)
+        if (!stunned && currentImpactStunTimer < 0.1f)
             attacks["DownAttack"].Attack(attackColliders[0]);
     }
 
     public void AttackUp()
     {
-        if (!stuned && currentImpactStunTimer < 0.1f)
+        if (!stunned && currentImpactStunTimer < 0.1f)
             attacks["UpAttack"].Attack(attackColliders[0]);
     }
 
@@ -164,6 +166,9 @@ public class PlayerController : MonoBehaviour
         foreach (var h in hability.Values)
             h.Update();
     }
+    #endregion
+
+    #region Habilities
 
     public void Dash()
     {
@@ -173,10 +178,10 @@ public class PlayerController : MonoBehaviour
 
     public void FallOff()
     {
-        if (!controller.isGrounded && !stuned && !isDashing)
+        if (!controller.isGrounded && !stunned && !isDashing)
         {
             myMoves["FallOff"].Move();
-            isFalling = true;
+            isFallingOff = true;
         }
     }
 
@@ -185,6 +190,7 @@ public class PlayerController : MonoBehaviour
         if (!PS_Charged.isPlaying)
             PS_Charged.Play();
     }
+    #endregion
 
     private void LateUpdate()
     {
@@ -199,7 +205,7 @@ public class PlayerController : MonoBehaviour
     public void ReceiveDamage(Vector3 impact)
     {
         Vector3 impactRelax = Vector3.zero;
-        if (stuned && currentImpactStunTimer > 0.1f)
+        if (stunned && currentImpactStunTimer > 0.1f)
         {
             impactRelax = (impactVelocity.magnitude / residualStunImpact) * impact;
             impactRelax = new Vector3(Mathf.Abs(impactRelax.x) > maxStunVelocityLimit ? Mathf.Sign(impactRelax.x) * maxStunVelocityLimit : impactRelax.x, Mathf.Abs(impactRelax.y) > maxStunVelocityLimit ? Mathf.Sign(impactRelax.y) * maxStunVelocityLimit : impactRelax.y, 0);
@@ -210,10 +216,10 @@ public class PlayerController : MonoBehaviour
         {
             impactRelax = impact;
             if(impact.magnitude >= maxNoStunVelocityLimit)
-                impactRelax = new Vector3(Mathf.Abs(impactRelax.x) > 0 ? Mathf.Sign(impactRelax.x) * maxNoStunVelocityLimit : 0, Mathf.Abs(impactRelax.y) > 0 ? Mathf.Sign(impactRelax.y) * maxNoStunVelocityLimit : 0, 0);
+                impactRelax = new Vector3(Mathf.Abs(impactRelax.x) != 0 ? Mathf.Sign(impactRelax.x) * maxNoStunVelocityLimit : 0, Mathf.Abs(impactRelax.y) != 0 ? Mathf.Sign(impactRelax.y) * maxNoStunVelocityLimit : 0, 0);
             impactVelocity = impactRelax;
             SetImpacts();
-            stuned = true;
+            stunned = true;
         }
         myAnim.Play("TakeDamage");
         currentImpactStunTimer = 0;
@@ -224,7 +230,7 @@ public class PlayerController : MonoBehaviour
         currentImpactStunTimer += Time.deltaTime;
         if (currentImpactStunTimer > impactStunMaxTimer)
         {
-            stuned = false;
+            stunned = false;
             currentImpactStunTimer = 0;
             impactVelocity = Vector3.zero;
         }
@@ -232,59 +238,67 @@ public class PlayerController : MonoBehaviour
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (!controller.isGrounded && hit.gameObject.tag == "Destroyable")
-            hit.transform.GetComponent<DestroyablePlatforms>().DestroyablePlatform(this);
+        //if (!controller.isGrounded && hit.gameObject.tag == "Destroyable" && Mathf.Abs(impactVelocity.y) > 0)
+        //    hit.transform.GetComponent<DestroyablePlatforms>().DestroyablePlatform(this);
 
         var dir = Vector3.Dot(transform.up, hit.normal);
         if (!controller.isGrounded && dir == -1)
         {
-            if(!stuned)
+            if(!stunned)
             {
                 verticalVelocity = -hitHeadReject;
                 moveVector.y = verticalVelocity;
             }
             else
             {
-                myLife -= moveVector.magnitude / 15;
-                myLifeUI.UpdateMyLife(moveVector.magnitude / 150);
+                UpdateMyLife(impactSpeed);
                 verticalVelocity = -hitHeadReject;
                 moveVector.y = verticalVelocity;
-                stuned = false;
+                stunned = false;
             }
         }
         else if (Vector3.Angle(transform.up, hit.normal) >= 90)
         {
-            if (stuned)
+            if (stunned)
             {
-				myLife -= moveVector.magnitude / 15;
-				myLifeUI.UpdateMyLife(moveVector.magnitude / 150);
-                moveVector = Vector3.zero;
-                verticalVelocity -= gravity * Time.deltaTime * 2;
-                impactVelocity.x = Mathf.Sign(moveVector.x) * 3f;
-                impactVelocity.y = verticalVelocity;
-                stuned = false;
+                UpdateMyLife(impactSpeed);
+                SmoothHitRefleject();
+                stunned = false;
             }
         }
         else
         {
             canJump = false;
-            if (stuned && impactVelocity.y > 0)
+            if (stunned && impactVelocity.y > 0)
             {
-                myLife -= impactSpeed / 15;
-                myLifeUI.UpdateMyLife(impactSpeed / 150);
+                UpdateMyLife(impactSpeed);
                 impactVelocity = Vector3.zero;
                 moveVector = Vector3.zero;
-                stuned = false;
+                stunned = false;
             }
-            else if(!stuned)
+            else if (!stunned)
                 impactVelocity = Vector3.zero;
-            if (isFalling)
+            if (isFallingOff)
             {
                 PS_Fall.Play();
-                isFalling = false;
+                isFallingOff = false;
             }
         }
 
+    }
+
+    public void SmoothHitRefleject()
+    {
+        moveVector = Vector3.zero;
+        verticalVelocity -= gravity * Time.deltaTime * 2;
+        impactVelocity.x = Mathf.Sign(moveVector.x) * 3f;
+        impactVelocity.y = verticalVelocity;
+    }
+
+    public void UpdateMyLife(float damage)
+    {
+        myLife -= Mathf.RoundToInt(damage);
+        myLifeUI.TakeDamage(Mathf.RoundToInt(damage));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -297,6 +311,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    #region Sets()
     private void SetMovements()
     {
         myMoves.Add(typeof(HorizontalMovement).ToString(), new HorizontalMovement(this));
@@ -324,4 +339,5 @@ public class PlayerController : MonoBehaviour
         else
             impactStunMaxTimer = impactSpeed / maxImpactToInfinitStun;
     }
+    #endregion
 }

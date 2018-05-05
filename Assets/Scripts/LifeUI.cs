@@ -5,14 +5,25 @@ using UnityEngine.UI;
 
 public class LifeUI : MonoBehaviour {
 
-	public Image greenLife;
+	public Image currentLifeBar;
+
+    public float maxLife;
+    private float currentLife;
 
 	void Start () {
-		greenLife = GetComponent<Image>();
+		currentLifeBar = GetComponent<Image>();
+        currentLife = maxLife;
 	}
 
-	public void UpdateMyLife(float life)
+	private void UpdateMyLifeHUD(float damage)
 	{
-		greenLife.fillAmount -= life/2;
-	}
+        var ratio = damage / maxLife;
+        currentLifeBar.fillAmount -= ratio;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentLife -= Mathf.RoundToInt(damage);
+        UpdateMyLifeHUD(damage);
+    }
 }

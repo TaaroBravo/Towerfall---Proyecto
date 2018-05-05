@@ -7,11 +7,16 @@ public class PowerUpManager : MonoBehaviour {
     public GameObject prefabPowerUp;
     public List<Transform> powerupsPos;
     public float spawnTimer;
-	
-	void Update ()
+
+    private void Start()
+    {
+        spawnTimer = 12f;
+    }
+
+    void Update ()
     {
         spawnTimer += Time.deltaTime;
-		if(spawnTimer > 10f)
+		if(spawnTimer > 20f)
         {
             CreatePowerUp();
             spawnTimer = 0;

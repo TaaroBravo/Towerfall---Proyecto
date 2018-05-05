@@ -16,16 +16,11 @@ public class Spikes : MonoBehaviour {
         if (collider.transform.GetComponent<PlayerController>())
         {
             PlayerController player = collider.transform.GetComponent<PlayerController>();
-            if (player.stuned)
+            if (player.stunned)
             {
-                player.myLife -= lifeIfHits;
-                player.myLifeUI.UpdateMyLife(lifeIfHits);
-                player.moveVector = Vector3.zero;
-                player.verticalVelocity -= player.gravity * Time.deltaTime * 2;
-                player.impactVelocity.x = Mathf.Sign(player.moveVector.x) * 3f;
-                player.impactVelocity.y = player.verticalVelocity;
-                player.stuned = false;
-                Debug.Log("Hola");
+                player.UpdateMyLife(lifeIfHits);
+                player.SmoothHitRefleject();
+                player.stunned = false;
             }
         }
     }
