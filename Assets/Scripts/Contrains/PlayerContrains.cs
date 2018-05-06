@@ -28,11 +28,12 @@ public class PlayerContrains : MonoBehaviour {
     {
         if(other.gameObject.layer == LayerMask.NameToLayer("DoorWarp"))
         {
-            var warpPos = other.transform.position.x + (Mathf.Sign(other.transform.position.x) * buffer);
-            if (player.position.x < warpPos)
-                OnMyLeft();
-            else if (player.position.x > warpPos)
-                OnMyRight();
+            other.gameObject.GetComponent<WarpController>().WarpWithParent(transform);
+            //var warpPos = other.transform.position.x + (Mathf.Sign(other.transform.position.x) * buffer);
+            //if (player.position.x < warpPos)
+            //    OnMyLeft();
+            //else if (player.position.x > warpPos)
+            //    OnMyRight();
         }
     }
 

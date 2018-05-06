@@ -22,14 +22,22 @@ public class HorizontalMovement : IMove
         base.Update();
 
         if (player.controller.isGrounded)
+        {
             player.verticalVelocity = -player.gravity * Time.deltaTime;
+            player.myAnim.SetBool("Jumping", false);
+            player.myAnim.SetBool("Grounded", true);
+        }
         else
+        {
             player.verticalVelocity -= player.gravity * Time.deltaTime;
+            player.myAnim.SetBool("Grounded", false);
+        }
 
         movement = player.GetComponent<PlayerInput>().MainHorizontal();
         if (movement != 0)
         {
-            player.myAnim.Play("Run");
+            if(!player.myAnim.GetBool("Jumping"))
+                player.myAnim.SetBool("Running", true);
             currentSpeedTimer += Time.deltaTime / slowSpeedCharge;
 
             if (currentSpeedTimer >= maxSpeedTimer)
@@ -38,15 +46,17 @@ public class HorizontalMovement : IMove
         else
         {
             currentSpeedTimer = 1;
-            player.myAnim.Play("Idle");
+            player.myAnim.SetBool("Running", false);
+            //if (!player.myAnim.GetBool("Jumping"))
+                //player.myAnim.Play("Idle");
         }
     }
 
     public override void Move()
     {
         player.transform.eulerAngles = movement == 0 ? player.transform.eulerAngles : new Vector3(0, Mathf.Sign(player.moveVector.x) * 90, 0);
-        if (!player.controller.isGrounded && movement == 0)
-            player.moveVector.x -= Mathf.Sign(player.moveVector.x) * 1.5f;
+        if (!player.controller.isGrounded && movement == 0 && player.moveVector.x != 0)
+            player.moveVector.x += -Mathf.Sign(player.moveVector.x) * 1.5f;
         else
             player.moveVector.x = movement * currentSpeedTimer * player.moveSpeed + player.impactVelocity.x;
         player.moveVector.y = player.verticalVelocity;

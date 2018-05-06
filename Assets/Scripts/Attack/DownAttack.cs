@@ -30,7 +30,7 @@ public class DownAttack : IAttack
                 if (CheckParently(c.transform))
                     continue;
                 PlayerController target = TargetScript(c.transform);
-                player.myAnim.Play("Attack01");
+                player.myAnim.Play("AttackDown");
                 player.hitParticles.Play();
                 if (target != null && !player.isCharged)
                     target.ReceiveDamage(new Vector3(0, -impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0));

@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public float gravity;
 
     public float jumpForce = 20;
+    public bool isJumping;
     public bool canJump;
 
     public bool isFallingOff;
@@ -110,9 +111,6 @@ public class PlayerController : MonoBehaviour
         if (stunned)
             StunUpdate();
         controller.Move(moveVector * Time.deltaTime);
-
-		if (myLife <= 0)
-			Destroy (gameObject);
     }
 
     public void Move()
@@ -220,8 +218,17 @@ public class PlayerController : MonoBehaviour
             impactVelocity = impactRelax;
             SetImpacts();
             stunned = true;
+            myAnim.SetBool("Stunned", true);
         }
-        myAnim.Play("TakeDamage");
+        if(myLife > 0)
+        {
+            if (impact.x != 0)
+                myAnim.Play("GetHit");
+            else if (impact.y < 0 && !myAnim.GetBool("Grounded"))
+                myAnim.Play("GetHitDown");
+            else if (impact.y > 0)
+                myAnim.Play("GetHitUp");
+        }
         currentImpactStunTimer = 0;
     }
 
@@ -231,6 +238,7 @@ public class PlayerController : MonoBehaviour
         if (currentImpactStunTimer > impactStunMaxTimer)
         {
             stunned = false;
+            myAnim.SetBool("Stunned", false);
             currentImpactStunTimer = 0;
             impactVelocity = Vector3.zero;
         }
@@ -255,6 +263,7 @@ public class PlayerController : MonoBehaviour
                 verticalVelocity = -hitHeadReject;
                 moveVector.y = verticalVelocity;
                 stunned = false;
+                myAnim.SetBool("Stunned", false);
             }
         }
         else if (Vector3.Angle(transform.up, hit.normal) >= 90)
@@ -264,6 +273,7 @@ public class PlayerController : MonoBehaviour
                 UpdateMyLife(impactSpeed);
                 SmoothHitRefleject();
                 stunned = false;
+                myAnim.SetBool("Stunned", false);
             }
         }
         else
@@ -275,6 +285,7 @@ public class PlayerController : MonoBehaviour
                 impactVelocity = Vector3.zero;
                 moveVector = Vector3.zero;
                 stunned = false;
+                myAnim.SetBool("Stunned", false);
             }
             else if (!stunned)
                 impactVelocity = Vector3.zero;
@@ -299,6 +310,10 @@ public class PlayerController : MonoBehaviour
     {
         myLife -= Mathf.RoundToInt(damage);
         myLifeUI.TakeDamage(Mathf.RoundToInt(damage));
+        if(myLife <= 0)
+        {
+            myAnim.Play("Death");
+        }
     }
 
     private void OnTriggerEnter(Collider other)

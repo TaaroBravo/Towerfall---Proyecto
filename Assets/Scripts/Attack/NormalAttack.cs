@@ -31,7 +31,7 @@ public class NormalAttack : IAttack
                 if (CheckParently(c.transform))
                     continue;
                 PlayerController target = TargetScript(c.transform);
-                player.myAnim.Play("Attack02");
+                player.myAnim.Play("AttackForward");
                 player.hitParticles.Play();
                 if (target != null && !player.isCharged)
                     target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0, 0));

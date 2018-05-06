@@ -13,5 +13,6 @@ public class Jump : IMove {
     {
         player.verticalVelocity = player.jumpForce;
         player.moveVector.y = player.verticalVelocity;
+        player.myAnim.SetBool("Jumping", true);
     }
 }
