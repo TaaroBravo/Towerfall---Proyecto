@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
-	public float myLife;
+    public float myLife;
     public CharacterController controller;
 
     #region Movement Variables
@@ -20,10 +20,15 @@ public class PlayerController : MonoBehaviour
 
     public float jumpForce = 20;
     public bool isJumping;
+    public bool isFalling;
     public bool canJump;
+    public bool delayJump;
 
     public bool isFallingOff;
     public float fallOffSpeed;
+
+    public bool coyoteBool;
+    public float coyoteTime;
     #endregion
 
     #region Attack Variables
@@ -86,13 +91,15 @@ public class PlayerController : MonoBehaviour
     public bool isCharged;
     public bool hitCharged;
 
-	public LifeUI myLifeUI;
+    public LifeUI myLifeUI;
 
     public ParticleSystem PS_Charged;
     public ParticleSystem PS_Fall;
     public Animator myAnim;
+
     void Start()
     {
+        coyoteTime = 0.1f;
         controller = GetComponent<CharacterController>();
         SetMovements();
         SetAttacks();
@@ -103,6 +110,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        PhysicsOptions();
         Move();
         UpdateHabilities();
         Attack();
@@ -113,6 +121,7 @@ public class PlayerController : MonoBehaviour
         controller.Move(moveVector * Time.deltaTime);
     }
 
+    #region Moves & Jump
     public void Move()
     {
         if (stunned)
@@ -124,15 +133,76 @@ public class PlayerController : MonoBehaviour
         {
             foreach (var m in myMoves.Values)
                 m.Update();
-            if (canJump && controller.isGrounded && !isFallingOff)
+            if ((canJump && controller.isGrounded && !isFallingOff) || (delayJump && controller.isGrounded) || coyoteBool && canJump)
             {
                 myMoves["Jump"].Move();
                 canJump = false;
+                delayJump = false;
+                coyoteBool = false;
             }
             else if (!isDashing && !isFallingOff)
                 myMoves["HorizontalMovement"].Move();
         }
     }
+
+    public void Jump()
+    {
+        canJump = true;
+        if (isFalling && IsCloseToGround())
+            delayJump = true;
+    }
+    #endregion
+
+    #region PhysicsOptions
+
+    #region PhysicsChecks
+    void PhysicsOptions()
+    {
+        PhysicsChecks();
+        if(controller.isGrounded)
+            StartCoroutine(CoyoteTime(coyoteTime));
+    }
+
+    void PhysicsChecks()
+    {
+        if (verticalVelocity < 0 && !controller.isGrounded)
+            isFalling = true;
+        else
+            isFalling = false;
+    }
+
+    bool IsCloseToGround()
+    {
+        return Physics.Raycast(transform.position, -Vector3.up, GetComponent<Collider>().bounds.extents.y + 0.5f);
+    }
+
+    IEnumerator CoyoteTime(float timer)
+    {
+        while (true)
+        {
+            bool grounded = controller.isGrounded;
+            yield return new WaitForSeconds(timer);
+            if(grounded != controller.isGrounded && !isJumping)
+            {
+                coyoteBool = true;
+                yield return new WaitForSeconds(timer * 2);
+                coyoteBool = false;
+            }
+            break;
+        }
+    }
+
+    #endregion
+ 
+
+    public void SmoothHitRefleject()
+    {
+        moveVector = Vector3.zero;
+        verticalVelocity -= gravity * Time.deltaTime * 2;
+        impactVelocity.x = Mathf.Sign(moveVector.x) * 3f;
+        impactVelocity.y = verticalVelocity;
+    }
+    #endregion
 
     #region Attacks
     void Attack()
@@ -188,7 +258,6 @@ public class PlayerController : MonoBehaviour
         if (!PS_Charged.isPlaying)
             PS_Charged.Play();
     }
-    #endregion
 
     private void LateUpdate()
     {
@@ -199,7 +268,9 @@ public class PlayerController : MonoBehaviour
             PS_Charged.Stop();
         }
     }
+    #endregion
 
+    #region ReceiveDamage
     public void ReceiveDamage(Vector3 impact)
     {
         Vector3 impactRelax = Vector3.zero;
@@ -213,14 +284,14 @@ public class PlayerController : MonoBehaviour
         else
         {
             impactRelax = impact;
-            if(impact.magnitude >= maxNoStunVelocityLimit)
+            if (impact.magnitude >= maxNoStunVelocityLimit)
                 impactRelax = new Vector3(Mathf.Abs(impactRelax.x) != 0 ? Mathf.Sign(impactRelax.x) * maxNoStunVelocityLimit : 0, Mathf.Abs(impactRelax.y) != 0 ? Mathf.Sign(impactRelax.y) * maxNoStunVelocityLimit : 0, 0);
             impactVelocity = impactRelax;
             SetImpacts();
             stunned = true;
             myAnim.SetBool("Stunned", true);
         }
-        if(myLife > 0)
+        if (myLife > 0)
         {
             if (impact.x != 0)
                 myAnim.Play("GetHit");
@@ -243,16 +314,16 @@ public class PlayerController : MonoBehaviour
             impactVelocity = Vector3.zero;
         }
     }
+    #endregion
 
+    #region Collisions, Colliders, Triggers
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        //if (!controller.isGrounded && hit.gameObject.tag == "Destroyable" && Mathf.Abs(impactVelocity.y) > 0)
-        //    hit.transform.GetComponent<DestroyablePlatforms>().DestroyablePlatform(this);
 
         var dir = Vector3.Dot(transform.up, hit.normal);
         if (!controller.isGrounded && dir == -1)
         {
-            if(!stunned)
+            if (!stunned)
             {
                 verticalVelocity = -hitHeadReject;
                 moveVector.y = verticalVelocity;
@@ -298,31 +369,24 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void SmoothHitRefleject()
+    private void OnTriggerEnter(Collider other)
     {
-        moveVector = Vector3.zero;
-        verticalVelocity -= gravity * Time.deltaTime * 2;
-        impactVelocity.x = Mathf.Sign(moveVector.x) * 3f;
-        impactVelocity.y = verticalVelocity;
+        if (other.gameObject.layer == LayerMask.NameToLayer("PowerUp"))
+        {
+            chargedEffect = other.GetComponent<IPowerUp>().PowerUp();
+            isCharged = true;
+            Destroy(other.gameObject);
+        }
     }
+    #endregion
 
     public void UpdateMyLife(float damage)
     {
         myLife -= Mathf.RoundToInt(damage);
         myLifeUI.TakeDamage(Mathf.RoundToInt(damage));
-        if(myLife <= 0)
+        if (myLife <= 0)
         {
             myAnim.Play("Death");
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.gameObject.layer == LayerMask.NameToLayer("PowerUp"))
-        {
-            chargedEffect = other.GetComponent<IPowerUp>().PowerUp();
-            isCharged = true;
-            Destroy(other.gameObject);
         }
     }
 

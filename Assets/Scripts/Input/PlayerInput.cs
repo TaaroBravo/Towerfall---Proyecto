@@ -33,7 +33,7 @@ public class PlayerInput : MonoBehaviour {
     void Update ()
     {
         if (Input.GetButtonDown(jumpButton))
-            player.canJump = true;
+            player.Jump();
         if (Input.GetButtonDown(hability1Button))
                 player.Dash();
         if (Input.GetButtonDown(hability2Button))

@@ -12,6 +12,7 @@ public class PlayerControllerCI : Editor
     AnimBool fadeVariablesAttack;
     AnimBool fadeVariablesHabilities;
     AnimBool fadeVariablesImpact;
+    AnimBool fadeVariablesGO;
 
     private void OnEnable()
     {
@@ -24,6 +25,8 @@ public class PlayerControllerCI : Editor
             fadeVariablesHabilities.valueChanged.AddListener(Repaint);
         if (fadeVariablesImpact != null)
             fadeVariablesImpact.valueChanged.AddListener(Repaint);
+        if (fadeVariablesGO != null)
+            fadeVariablesGO.valueChanged.AddListener(Repaint);
     }
 
     public override void OnInspectorGUI()
@@ -37,6 +40,8 @@ public class PlayerControllerCI : Editor
             fadeVariablesHabilities = new AnimBool();
         if (fadeVariablesImpact == null)
             fadeVariablesImpact = new AnimBool();
+        if (fadeVariablesGO == null)
+            fadeVariablesGO = new AnimBool();
         EditorGUILayout.Space();
         player.myLife = EditorGUILayout.FloatField("Life of Player", player.myLife);
         EditorGUILayout.Space();
@@ -113,6 +118,25 @@ public class PlayerControllerCI : Editor
             EditorGUILayout.Space();
             player.hitHeadReject = EditorGUILayout.FloatField(new GUIContent("Hit Roof Rejection", "Si chocás el techo, ¿a qué velocidad te devuelve?"), Mathf.Abs(player.hitHeadReject));
             player.maxNoStunVelocityLimit = EditorGUILayout.FloatField(new GUIContent("Max Velocity Limit", "¿Cuál es el limite de la velocidad del jugador NO stuneado?"), player.maxNoStunVelocityLimit);
+            EditorGUILayout.Space();
+        }
+        EditorGUILayout.EndFadeGroup();
+        fadeVariablesGO.target = EditorGUILayout.Foldout(fadeVariablesGO.target, "Variables Referencias");
+        if (EditorGUILayout.BeginFadeGroup(fadeVariablesGO.faded))
+        {
+            EditorGUILayout.LabelField("Particulas:", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Hit");
+            player.hitParticles = (ParticleSystem)EditorGUILayout.ObjectField(player.hitParticles, typeof(ParticleSystem), true);
+            EditorGUILayout.LabelField("Charged");
+            player.PS_Charged = (ParticleSystem)EditorGUILayout.ObjectField(player.PS_Charged, typeof(ParticleSystem), true);
+            EditorGUILayout.LabelField("Fall off");
+            player.PS_Fall = (ParticleSystem)EditorGUILayout.ObjectField(player.PS_Fall, typeof(ParticleSystem), true);
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Vida HUD:", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+            player.myLifeUI = (LifeUI)EditorGUILayout.ObjectField(player.myLifeUI, typeof(LifeUI), true);
             EditorGUILayout.Space();
         }
         EditorGUILayout.EndFadeGroup();
