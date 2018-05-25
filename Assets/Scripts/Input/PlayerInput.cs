@@ -54,6 +54,13 @@ public class PlayerInput : MonoBehaviour {
         return Mathf.Clamp(r, -1.0f, 1.0f);
     }
 
+    public float MainVertical()
+    {
+        float r = 0.0f;
+        r += Input.GetAxis(controller.ToString() + "_MainVertical_P" + id);
+        return Mathf.Clamp(r, -1.0f, 1.0f);
+    }
+
     public void SetPlayerInput()
     {
         horizontalMove = controller.ToString() + "_MainHorizontal_P" + id;

@@ -24,21 +24,23 @@ public class DownAttack : IAttack
     {
         if (timerCoolDownAttack < 0)
         {
+            player.myAnim.Play("AttackDown");
             Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
             foreach (Collider c in cols)
             {
                 if (CheckParently(c.transform))
                     continue;
                 PlayerController target = TargetScript(c.transform);
-                player.myAnim.Play("AttackDown");
                 player.hitParticles.Play();
+                //Ver si hay que sacar el Charged;
                 if (target != null && !player.isCharged)
                     target.ReceiveDamage(new Vector3(0, -impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0));
-                else if(target != null)
+                else if (target != null)
                 {
                     chargedEffect = player.chargedEffect * 3;
                     target.ReceiveDamage(new Vector3(0, -player.chargedEffect, 0));
-                    player.hitCharged = true;
+                    player.marked = true;
+                    target.WhoHitedMe(player);
                 }
             }
             timerCoolDownAttack = coolDownAttack;

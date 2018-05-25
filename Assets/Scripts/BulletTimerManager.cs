@@ -28,13 +28,26 @@ public class BulletTimerManager : MonoBehaviour
     void Update()
     {
         var stunnedPlayers = allPlayers.Where(x => x.stunned).Where(x => x.impactSpeed > 25);
-        var anyStunned = allPlayers.Where(x => !x.stunned).Any(x => stunnedPlayers.Any(y => Vector3.Distance(y.transform.position, x.transform.position) < distance));
-        slowTime = anyStunned;
+        if (allPlayers.Count() <= 2)
+        {
+            var anyStunned = allPlayers.Where(x => !x.stunned).Any(x => stunnedPlayers.Any(y => Vector3.Distance(y.transform.position, x.transform.position) < distance));
+            slowTime = anyStunned;
 
-        if (slowTime)
-            SlowTime();
+            if (slowTime)
+                SlowTime();
+            else
+                NormalTime();
+        }
         else
-            NormalTime();
+        {
+            var anyStunned = allPlayers.Where(x => !x.stunned).Where(x => stunnedPlayers.Any(y => y.whoHitedMe != x)).Any(x => stunnedPlayers.Any(y => Vector3.Distance(y.transform.position, x.transform.position) < distance));
+            slowTime = anyStunned;
+
+            if (slowTime)
+                SlowTime();
+            else
+                NormalTime();
+        }
     }
 
     void SlowTime()

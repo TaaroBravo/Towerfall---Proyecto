@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Player
 {
 
     public float myLife;
@@ -75,6 +75,16 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem hitParticles;
     #endregion
 
+    #region MarkVariables
+    public float markMaxTimer;
+    public float currentMarkTimer;
+
+    public float hitByMarked;
+
+    public bool carryingMark;
+    public MarkElement markElement;
+    #endregion
+
     private IMove _iMove;
 
     public Collider[] attackColliders;
@@ -85,7 +95,14 @@ public class PlayerController : MonoBehaviour
     private Dictionary<string, IHability> hability = new Dictionary<string, IHability>();
     #endregion
 
+    public PlayerController whoHitedMe;
     public bool stunned;
+    public bool marked;
+    public int countHitByMarked;
+
+    public bool stunnedByGhost;
+    private float maxStunnedGhost;
+    private float currentStunnedGhost;
 
     public float chargedEffect;
     public bool isCharged;
@@ -106,6 +123,8 @@ public class PlayerController : MonoBehaviour
         SetHabilities();
         myLifeUI.maxLife = myLife;
         myAnim = GetComponent<Animator>();
+
+        maxStunnedGhost = 5f;
     }
 
     void Update()
@@ -114,34 +133,36 @@ public class PlayerController : MonoBehaviour
         Move();
         UpdateHabilities();
         Attack();
-        if (isCharged)
-            Charged();
-        if (stunned)
-            StunUpdate();
-        controller.Move(moveVector * Time.deltaTime);
+        StunAndMark();
+
+        if (!stunnedByGhost)
+            controller.Move(moveVector * Time.deltaTime);
     }
 
     #region Moves & Jump
     public void Move()
     {
-        if (stunned)
+        if (!stunnedByGhost)
         {
-            moveVector.x = impactVelocity.x;
-            moveVector.y = impactVelocity.y;
-        }
-        else
-        {
-            foreach (var m in myMoves.Values)
-                m.Update();
-            if ((canJump && controller.isGrounded && !isFallingOff) || (delayJump && controller.isGrounded) || coyoteBool && canJump)
+            if (stunned)
             {
-                myMoves["Jump"].Move();
-                canJump = false;
-                delayJump = false;
-                coyoteBool = false;
+                moveVector.x = impactVelocity.x;
+                moveVector.y = impactVelocity.y;
             }
-            else if (!isDashing && !isFallingOff)
-                myMoves["HorizontalMovement"].Move();
+            else
+            {
+                foreach (var m in myMoves.Values)
+                    m.Update();
+                if ((canJump && controller.isGrounded && !isFallingOff) || (delayJump && controller.isGrounded) || coyoteBool && canJump)
+                {
+                    myMoves["Jump"].Move();
+                    canJump = false;
+                    delayJump = false;
+                    coyoteBool = false;
+                }
+                else if (!isDashing && !isFallingOff)
+                    myMoves["HorizontalMovement"].Move();
+            }
         }
     }
 
@@ -159,7 +180,7 @@ public class PlayerController : MonoBehaviour
     void PhysicsOptions()
     {
         PhysicsChecks();
-        if(controller.isGrounded)
+        if (controller.isGrounded)
             StartCoroutine(CoyoteTime(coyoteTime));
     }
 
@@ -182,7 +203,7 @@ public class PlayerController : MonoBehaviour
         {
             bool grounded = controller.isGrounded;
             yield return new WaitForSeconds(timer);
-            if(grounded != controller.isGrounded && !isJumping)
+            if (grounded != controller.isGrounded && !isJumping)
             {
                 coyoteBool = true;
                 yield return new WaitForSeconds(timer * 2);
@@ -193,7 +214,7 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
- 
+
 
     public void SmoothHitRefleject()
     {
@@ -204,9 +225,64 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    #region Stun & Mark
+    void StunAndMark()
+    {
+        if (stunned)
+            StunUpdate();
+        if (stunnedByGhost)
+            StunGhostUpdate();
+        if (marked)
+            MarkUpdate();
+    }
+
+    void StunUpdate()
+    {
+        currentImpactStunTimer += Time.deltaTime;
+        if (currentImpactStunTimer > impactStunMaxTimer)
+        {
+            whoHitedMe = null;
+            stunned = false;
+            myAnim.SetBool("Stunned", false);
+            currentImpactStunTimer = 0;
+            impactVelocity = Vector3.zero;
+        }
+    }
+
+    void StunGhostUpdate()
+    {
+        currentStunnedGhost += Time.deltaTime;
+        if (currentStunnedGhost > maxStunnedGhost)
+        {
+            stunnedByGhost = false;
+            currentStunnedGhost = 0;
+        }
+    }
+
+    public void WhoHitedMe(PlayerController pl)
+    {
+        whoHitedMe = pl;
+        if (whoHitedMe.marked)
+            countHitByMarked++;
+    }
+
+    void MarkUpdate()
+    {
+        currentMarkTimer += Time.deltaTime;
+        if (currentMarkTimer > markMaxTimer)
+        {
+            carryingMark = false;
+            marked = false;
+            currentMarkTimer = 0;
+        }
+    }
+    #endregion
+
     #region Attacks
     void Attack()
     {
+        if (isCharged)
+            Charged();
         foreach (var a in attacks.Values)
             a.Update();
     }
@@ -214,7 +290,14 @@ public class PlayerController : MonoBehaviour
     public void AttackNormal()
     {
         if (!stunned && currentImpactStunTimer < 0.1f)
+        {
             attacks["NormalAttack"].Attack(attackColliders[0]);
+            if (carryingMark)
+            {
+                markElement.Drop();
+                carryingMark = false;
+            }
+        }
     }
 
     public void AttackDown()
@@ -274,6 +357,16 @@ public class PlayerController : MonoBehaviour
     public void ReceiveDamage(Vector3 impact)
     {
         Vector3 impactRelax = Vector3.zero;
+
+        if (marked && stunned)
+        {
+            UpdateMyLife(50);
+        }
+
+        else if (marked)
+        {
+            UpdateMyLife(10);
+        }
         if (stunned && currentImpactStunTimer > 0.1f)
         {
             impactRelax = (impactVelocity.magnitude / residualStunImpact) * impact;
@@ -303,17 +396,7 @@ public class PlayerController : MonoBehaviour
         currentImpactStunTimer = 0;
     }
 
-    private void StunUpdate()
-    {
-        currentImpactStunTimer += Time.deltaTime;
-        if (currentImpactStunTimer > impactStunMaxTimer)
-        {
-            stunned = false;
-            myAnim.SetBool("Stunned", false);
-            currentImpactStunTimer = 0;
-            impactVelocity = Vector3.zero;
-        }
-    }
+
     #endregion
 
     #region Collisions, Colliders, Triggers
@@ -330,7 +413,6 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                UpdateMyLife(impactSpeed);
                 verticalVelocity = -hitHeadReject;
                 moveVector.y = verticalVelocity;
                 stunned = false;
@@ -341,7 +423,6 @@ public class PlayerController : MonoBehaviour
         {
             if (stunned)
             {
-                UpdateMyLife(impactSpeed);
                 SmoothHitRefleject();
                 stunned = false;
                 myAnim.SetBool("Stunned", false);
@@ -352,7 +433,6 @@ public class PlayerController : MonoBehaviour
             canJump = false;
             if (stunned && impactVelocity.y > 0)
             {
-                UpdateMyLife(impactSpeed);
                 impactVelocity = Vector3.zero;
                 moveVector = Vector3.zero;
                 stunned = false;
@@ -380,6 +460,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    #region UpdateLife
     public void UpdateMyLife(float damage)
     {
         myLife -= Mathf.RoundToInt(damage);
@@ -387,8 +468,10 @@ public class PlayerController : MonoBehaviour
         if (myLife <= 0)
         {
             myAnim.Play("Death");
+            Destroy(gameObject, 3f);
         }
     }
+    #endregion
 
     #region Sets()
     private void SetMovements()

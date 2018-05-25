@@ -47,8 +47,6 @@ public class HorizontalMovement : IMove
         {
             currentSpeedTimer = 1;
             player.myAnim.SetBool("Running", false);
-            //if (!player.myAnim.GetBool("Jumping"))
-                //player.myAnim.Play("Idle");
         }
     }
 

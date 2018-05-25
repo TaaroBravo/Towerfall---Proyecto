@@ -13,6 +13,7 @@ public class PlayerControllerCI : Editor
     AnimBool fadeVariablesHabilities;
     AnimBool fadeVariablesImpact;
     AnimBool fadeVariablesGO;
+    AnimBool fadeVariablesMark;
 
     private void OnEnable()
     {
@@ -27,6 +28,8 @@ public class PlayerControllerCI : Editor
             fadeVariablesImpact.valueChanged.AddListener(Repaint);
         if (fadeVariablesGO != null)
             fadeVariablesGO.valueChanged.AddListener(Repaint);
+        if (fadeVariablesMark != null)
+            fadeVariablesMark.valueChanged.AddListener(Repaint);
     }
 
     public override void OnInspectorGUI()
@@ -42,6 +45,8 @@ public class PlayerControllerCI : Editor
             fadeVariablesImpact = new AnimBool();
         if (fadeVariablesGO == null)
             fadeVariablesGO = new AnimBool();
+        if (fadeVariablesMark == null)
+            fadeVariablesMark = new AnimBool();
         EditorGUILayout.Space();
         player.myLife = EditorGUILayout.FloatField("Life of Player", player.myLife);
         EditorGUILayout.Space();
@@ -119,6 +124,12 @@ public class PlayerControllerCI : Editor
             player.hitHeadReject = EditorGUILayout.FloatField(new GUIContent("Hit Roof Rejection", "Si chocás el techo, ¿a qué velocidad te devuelve?"), Mathf.Abs(player.hitHeadReject));
             player.maxNoStunVelocityLimit = EditorGUILayout.FloatField(new GUIContent("Max Velocity Limit", "¿Cuál es el limite de la velocidad del jugador NO stuneado?"), player.maxNoStunVelocityLimit);
             EditorGUILayout.Space();
+        }
+        EditorGUILayout.EndFadeGroup();
+        fadeVariablesMark.target = EditorGUILayout.Foldout(fadeVariablesMark.target, "Variables Marcado");
+        if (EditorGUILayout.BeginFadeGroup(fadeVariablesMark.faded))
+        {
+            player.markMaxTimer = EditorGUILayout.FloatField(new GUIContent("Max Mark Time", "¿Cuánto tiempo tiene que pasar hasta que desaparece el marcado?"), player.markMaxTimer);
         }
         EditorGUILayout.EndFadeGroup();
         fadeVariablesGO.target = EditorGUILayout.Foldout(fadeVariablesGO.target, "Variables Referencias");
