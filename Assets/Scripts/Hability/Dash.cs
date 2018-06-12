@@ -24,6 +24,7 @@ public class Dash : IHability {
         {
             dashingTime = 0;
             player.isDashing = false;
+            player.myAnim.SetBool("Dashing", false);
         }
 
         if (player.controller.isGrounded && !player.isDashing)
@@ -41,6 +42,8 @@ public class Dash : IHability {
             player.verticalVelocity = 0;
             player.moveVector.y = player.verticalVelocity;
             timerCoolDown = coolDown;
+            player.myAnim.Play("Dash");
+            player.myAnim.SetBool("Dashing", true);
         }
     }
 }

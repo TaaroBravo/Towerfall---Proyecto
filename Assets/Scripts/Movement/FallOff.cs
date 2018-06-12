@@ -15,5 +15,7 @@ public class FallOff : IMove
         player.verticalVelocity = -player.fallOffSpeed;
         player.moveVector.x = 0;
         player.moveVector.y = player.verticalVelocity;
+        player.myAnim.Play("Forced Fall");
+        player.isFallingOff = true;
     }
 }

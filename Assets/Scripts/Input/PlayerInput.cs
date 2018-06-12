@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInput : MonoBehaviour {
+public class PlayerInput : MonoBehaviour
+{
 
     public Controller controller;
     public int id;
@@ -30,21 +31,23 @@ public class PlayerInput : MonoBehaviour {
         SetPlayerInput();
     }
 
-    void Update ()
+    void Update()
     {
-        if (Input.GetButtonDown(jumpButton))
-            player.Jump();
-        if (Input.GetButtonDown(hability1Button))
+        if (player && player.myLife > 0)
+        {
+            if (Input.GetButtonDown(jumpButton))
+                player.Jump();
+            if (Input.GetButtonDown(hability1Button))
                 player.Dash();
-        if (Input.GetButtonDown(hability2Button))
-            player.FallOff();
-        if (Input.GetButtonDown(normalAttack))
-            player.AttackNormal();
-        if (Input.GetButtonDown(downAttack))
-            player.AttackDown();
-        if (Input.GetButtonDown(upAttack))
-            player.AttackUp();
-
+            if (Input.GetButtonDown(hability2Button))
+                player.FallOff();
+            if (Input.GetButtonDown(normalAttack))
+                player.AttackNormal();
+            if (Input.GetButtonDown(downAttack))
+                player.AttackDown();
+            if (Input.GetButtonDown(upAttack))
+                player.AttackUp();
+        }
     }
 
     public float MainHorizontal()

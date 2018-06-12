@@ -72,22 +72,14 @@ public class PlayerController : Player
     public float maxNoStunVelocityLimit;
     public float maxStunVelocityLimit;
 
+    bool canAttack;
+
     public ParticleSystem hitParticles;
-    #endregion
-
-    #region MarkVariables
-    public float markMaxTimer;
-    public float currentMarkTimer;
-
-    public float hitByMarked;
-
-    public bool carryingMark;
-    public MarkElement markElement;
     #endregion
 
     private IMove _iMove;
 
-    public Collider[] attackColliders;
+    public Collider attackColliders;
 
     #region Dictionarys
     private Dictionary<string, IMove> myMoves = new Dictionary<string, IMove>();
@@ -96,9 +88,9 @@ public class PlayerController : Player
     #endregion
 
     public PlayerController whoHitedMe;
+    public PlayerController whoIHited;
+    public bool isDead;
     public bool stunned;
-    public bool marked;
-    public int countHitByMarked;
 
     public bool stunnedByGhost;
     private float maxStunnedGhost;
@@ -110,6 +102,8 @@ public class PlayerController : Player
 
     public LifeUI myLifeUI;
 
+    public ParticleSystem PS_Stunned; //Podría ser unos signos de pregunta o estrellitas arriba de la cabeza.
+    public ParticleSystem PS_Marked;
     public ParticleSystem PS_Charged;
     public ParticleSystem PS_Fall;
     public Animator myAnim;
@@ -123,8 +117,8 @@ public class PlayerController : Player
         SetHabilities();
         myLifeUI.maxLife = myLife;
         myAnim = GetComponent<Animator>();
-
         maxStunnedGhost = 5f;
+        StartCoroutine(CanAttack(0.1f));
     }
 
     void Update()
@@ -163,6 +157,11 @@ public class PlayerController : Player
                 else if (!isDashing && !isFallingOff)
                     myMoves["HorizontalMovement"].Move();
             }
+        }
+        else
+        {
+            if (!PS_Stunned.isPlaying)
+                PS_Stunned.Play();
         }
     }
 
@@ -219,9 +218,10 @@ public class PlayerController : Player
     public void SmoothHitRefleject()
     {
         moveVector = Vector3.zero;
-        verticalVelocity -= gravity * Time.deltaTime * 2;
-        impactVelocity.x = Mathf.Sign(moveVector.x) * 3f;
-        impactVelocity.y = verticalVelocity;
+        //verticalVelocity -= gravity * Time.deltaTime * 2;
+        //impactVelocity.x = Mathf.Sign(moveVector.x) * 3f;
+        //impactVelocity.y = verticalVelocity;
+        myAnim.Play("HitOnWall");
     }
     #endregion
 
@@ -232,8 +232,6 @@ public class PlayerController : Player
             StunUpdate();
         if (stunnedByGhost)
             StunGhostUpdate();
-        if (marked)
-            MarkUpdate();
     }
 
     void StunUpdate()
@@ -256,25 +254,13 @@ public class PlayerController : Player
         {
             stunnedByGhost = false;
             currentStunnedGhost = 0;
+            PS_Stunned.Stop();
         }
     }
 
     public void WhoHitedMe(PlayerController pl)
     {
         whoHitedMe = pl;
-        if (whoHitedMe.marked)
-            countHitByMarked++;
-    }
-
-    void MarkUpdate()
-    {
-        currentMarkTimer += Time.deltaTime;
-        if (currentMarkTimer > markMaxTimer)
-        {
-            carryingMark = false;
-            marked = false;
-            currentMarkTimer = 0;
-        }
     }
     #endregion
 
@@ -289,27 +275,40 @@ public class PlayerController : Player
 
     public void AttackNormal()
     {
-        if (!stunned && currentImpactStunTimer < 0.1f)
+        if (!stunned && canAttack)
         {
-            attacks["NormalAttack"].Attack(attackColliders[0]);
-            if (carryingMark)
-            {
-                markElement.Drop();
-                carryingMark = false;
-            }
+            attacks["NormalAttack"].Attack(attackColliders);
+            StartCoroutine(CanAttack(0.1f));
         }
     }
 
     public void AttackDown()
     {
-        if (!stunned && currentImpactStunTimer < 0.1f)
-            attacks["DownAttack"].Attack(attackColliders[0]);
+        if (!stunned && canAttack)
+        {
+            attacks["DownAttack"].Attack(attackColliders);
+            StartCoroutine(CanAttack(0.1f));
+        }
     }
 
     public void AttackUp()
     {
-        if (!stunned && currentImpactStunTimer < 0.1f)
-            attacks["UpAttack"].Attack(attackColliders[0]);
+        if (!stunned && canAttack)
+        {
+            attacks["UpAttack"].Attack(attackColliders);
+            StartCoroutine(CanAttack(0.1f));
+        }
+    }
+
+    IEnumerator CanAttack(float x)
+    {
+        while (true)
+        {
+            canAttack = false;
+            yield return new WaitForSeconds(x);
+            canAttack = true;
+            break;
+        }
     }
 
     void UpdateHabilities()
@@ -330,10 +329,7 @@ public class PlayerController : Player
     public void FallOff()
     {
         if (!controller.isGrounded && !stunned && !isDashing)
-        {
             myMoves["FallOff"].Move();
-            isFallingOff = true;
-        }
     }
 
     void Charged()
@@ -358,12 +354,11 @@ public class PlayerController : Player
     {
         Vector3 impactRelax = Vector3.zero;
 
-        if (marked && stunned)
+        if (stunned)
         {
             UpdateMyLife(50);
         }
-
-        else if (marked)
+        else
         {
             UpdateMyLife(10);
         }
@@ -431,7 +426,7 @@ public class PlayerController : Player
         else
         {
             canJump = false;
-            if (stunned && impactVelocity.y > 0)
+            if (stunned && impactVelocity.y < 0)
             {
                 impactVelocity = Vector3.zero;
                 moveVector = Vector3.zero;
@@ -442,7 +437,7 @@ public class PlayerController : Player
                 impactVelocity = Vector3.zero;
             if (isFallingOff)
             {
-                PS_Fall.Play();
+                //PS_Fall.Play();
                 isFallingOff = false;
             }
         }
@@ -468,9 +463,20 @@ public class PlayerController : Player
         if (myLife <= 0)
         {
             myAnim.Play("Death");
+            StartCoroutine(Death(3f));
             Destroy(gameObject, 3f);
         }
     }
+
+    IEnumerator Death(float x)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(x - 0.1f);
+            isDead = true;
+        }
+    }
+
     #endregion
 
     #region Sets()
@@ -486,6 +492,7 @@ public class PlayerController : Player
         attacks.Add(typeof(NormalAttack).ToString(), new NormalAttack(this, normalAttackCoolDown));
         attacks.Add(typeof(UpAttack).ToString(), new UpAttack(this, upAttackCoolDown));
         attacks.Add(typeof(DownAttack).ToString(), new DownAttack(this, downAttackCoolDown));
+        CanAttack(0.1f);
     }
 
     private void SetHabilities()

@@ -19,12 +19,11 @@ public class PhantomMovement : IMove
     public override void Move()
     {
         float moveHorizontal = phantom.GetComponent<PlayerInput>().MainHorizontal();
-        if (moveHorizontal != 0)
-        {
-            float speed = 360.0f;
-            float time = 1.0f;
-            phantom.transform.RotateAround(phantom.transform.position, Vector3.forward, speed * moveHorizontal * Time.deltaTime / time);
-        }
+
+        phantom.transform.position += phantom.transform.forward * 5 * Time.deltaTime;
+        Vector3 dir = new Vector3(moveHorizontal * 5, 0, 0);
+        var v = phantom.transform.rotation * Quaternion.Euler(dir);
+        phantom.transform.rotation = Quaternion.Lerp(phantom.transform.rotation, v, Time.deltaTime * 50);
     }
 
 

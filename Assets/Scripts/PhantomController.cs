@@ -8,8 +8,8 @@ public class PhantomController : Player
     public Vector3 moveVector;
     private IMove _iMove;
     private Dictionary<string, IMove> myMoves = new Dictionary<string, IMove>();
-    bool invulnerable;
-    float currentInvul;
+    public bool invulnerable;
+    public float currentInvul;
 
     void Start()
     {
@@ -19,7 +19,7 @@ public class PhantomController : Player
     void Update()
     {
         Move();
-        transform.position += transform.forward * Time.deltaTime * 6;
+        //transform.position += transform.forward * Time.deltaTime * 6;
         if(invulnerable)
             Invulnerable();
     }
@@ -61,9 +61,9 @@ public class PhantomController : Player
             if (!CheckParently(other.transform))
             {
                 PlayerController target = TargetScript(other.transform);
-                target.GetComponent<PlayerController>().stunnedByGhost = true;
+                if(target)
+                    target.GetComponent<PlayerController>().stunnedByGhost = true;
                 invulnerable = true;
-                gameObject.SetActive(false);
             }
         }
     }

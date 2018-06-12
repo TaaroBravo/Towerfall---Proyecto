@@ -24,7 +24,10 @@ public class UpAttack : IAttack
     {
         if (timerCoolDownAttack < 0)
         {
-            player.myAnim.Play("AttackUp");
+            if (player.myAnim.GetBool("Grounded"))
+                player.myAnim.Play("AttackUp");
+            else
+                player.myAnim.Play("HitUpAir");
             Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
             foreach (Collider c in cols)
             {
@@ -34,12 +37,15 @@ public class UpAttack : IAttack
                 player.hitParticles.Play();
                 //Ver si hay que sacar el Charged y remplazarlo por mark;
                 if (target != null && !player.isCharged)
+                {
                     target.ReceiveDamage(new Vector3(0, impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0));
+                    player.whoIHited = target;
+                }
                 else if (target != null)
                 {
+                    player.whoIHited = target;
                     chargedEffect = player.chargedEffect;
                     target.ReceiveDamage(new Vector3(0, chargedEffect, 0));
-                    player.marked = true;
                     target.stunned = true;
                     target.WhoHitedMe(player);
                 }

@@ -126,19 +126,20 @@ public class PlayerControllerCI : Editor
             EditorGUILayout.Space();
         }
         EditorGUILayout.EndFadeGroup();
-        fadeVariablesMark.target = EditorGUILayout.Foldout(fadeVariablesMark.target, "Variables Marcado");
-        if (EditorGUILayout.BeginFadeGroup(fadeVariablesMark.faded))
-        {
-            player.markMaxTimer = EditorGUILayout.FloatField(new GUIContent("Max Mark Time", "¿Cuánto tiempo tiene que pasar hasta que desaparece el marcado?"), player.markMaxTimer);
-        }
-        EditorGUILayout.EndFadeGroup();
         fadeVariablesGO.target = EditorGUILayout.Foldout(fadeVariablesGO.target, "Variables Referencias");
         if (EditorGUILayout.BeginFadeGroup(fadeVariablesGO.faded))
         {
+            EditorGUILayout.LabelField("Ataques:", EditorStyles.boldLabel);
+            player.attackColliders = (Collider)EditorGUILayout.ObjectField(player.attackColliders, typeof(Collider), true);
+            EditorGUILayout.Space();
             EditorGUILayout.LabelField("Particulas:", EditorStyles.boldLabel);
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Hit");
             player.hitParticles = (ParticleSystem)EditorGUILayout.ObjectField(player.hitParticles, typeof(ParticleSystem), true);
+            EditorGUILayout.LabelField("Marked");
+            player.PS_Marked = (ParticleSystem)EditorGUILayout.ObjectField(player.PS_Marked, typeof(ParticleSystem), true);
+            EditorGUILayout.LabelField("Stunned");
+            player.PS_Stunned = (ParticleSystem)EditorGUILayout.ObjectField(player.PS_Stunned, typeof(ParticleSystem), true);
             EditorGUILayout.LabelField("Charged");
             player.PS_Charged = (ParticleSystem)EditorGUILayout.ObjectField(player.PS_Charged, typeof(ParticleSystem), true);
             EditorGUILayout.LabelField("Fall off");

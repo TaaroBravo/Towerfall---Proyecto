@@ -25,7 +25,11 @@ public class NormalAttack : IAttack
     {
         if (timerCoolDownAttack < 0)
         {
-            player.myAnim.Play("AttackForward");
+            if (player.myAnim.GetBool("Grounded"))
+                player.myAnim.Play("AttackForward");
+            else
+                player.myAnim.Play("HitForwardAir");
+            
             Collider[] cols = Physics.OverlapBox(col.bounds.center, col.bounds.extents * weaponExtends, col.transform.rotation, LayerMask.GetMask("Hitbox"));
             foreach (Collider c in cols)
             {
@@ -37,9 +41,11 @@ public class NormalAttack : IAttack
                 {
                     target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * impactVelocity * (Mathf.Abs(player.moveVector.x == 0 ? defaultAttack : player.moveVector.x) / influenceOfMovement), 0, 0));
                     target.WhoHitedMe(player);
+                    player.whoIHited = target;
                 }
                 else if (target != null)
                 {
+                    player.whoIHited = target;
                     chargedEffect = player.chargedEffect;
                     target.ReceiveDamage(new Vector3(Mathf.Sign(player.transform.forward.x) * chargedEffect, 0, 0));
                     target.WhoHitedMe(player);
