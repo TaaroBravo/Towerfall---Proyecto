@@ -108,15 +108,19 @@ public class PlayerController : Player
     public ParticleSystem PS_Fall;
     public Animator myAnim;
 
+    private void Awake()
+    {
+        controller = GetComponent<CharacterController>();
+        myAnim = GetComponent<Animator>();
+    }
+
     void Start()
     {
         coyoteTime = 0.1f;
-        controller = GetComponent<CharacterController>();
         SetMovements();
         SetAttacks();
         SetHabilities();
         myLifeUI.maxLife = myLife;
-        myAnim = GetComponent<Animator>();
         maxStunnedGhost = 5f;
         StartCoroutine(CanAttack(0.1f));
     }
@@ -124,7 +128,8 @@ public class PlayerController : Player
     void Update()
     {
         PhysicsOptions();
-        Move();
+        if(!GameManager.Instance.finishedGame && !GameManager.Instance.startingGame)
+            Move();
         UpdateHabilities();
         Attack();
         StunAndMark();

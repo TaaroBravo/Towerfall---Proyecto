@@ -33,20 +33,23 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
     {
-        if (player && player.myLife > 0)
+        if(!GameManager.Instance.startingGame && !GameManager.Instance.finishedGame)
         {
-            if (Input.GetButtonDown(jumpButton))
-                player.Jump();
-            if (Input.GetButtonDown(hability1Button))
-                player.Dash();
-            if (Input.GetButtonDown(hability2Button))
-                player.FallOff();
-            if (Input.GetButtonDown(normalAttack))
-                player.AttackNormal();
-            if (Input.GetButtonDown(downAttack))
-                player.AttackDown();
-            if (Input.GetButtonDown(upAttack))
-                player.AttackUp();
+            if (player && player.myLife > 0)
+            {
+                if (Input.GetButtonDown(jumpButton))
+                    player.Jump();
+                if (Input.GetButtonDown(hability1Button))
+                    player.Dash();
+                if (Input.GetButtonDown(hability2Button))
+                    player.FallOff();
+                if (Input.GetButtonDown(normalAttack))
+                    player.AttackNormal();
+                if (Input.GetButtonDown(downAttack))
+                    player.AttackDown();
+                if (Input.GetButtonDown(upAttack))
+                    player.AttackUp();
+            }
         }
     }
 
